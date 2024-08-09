@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import styles from './Filters.module.scss';
+import styles from './filters.module.scss';
 
 const Filters = () => {
   const [filters, setFilters] = useState([]);

@@ -19,6 +19,12 @@
     }
   }
 
+  &__categories {
+    font-size: 7px;
+    text-transform: uppercase;
+    fill: var(--color-black);
+  }
+
   line {
     stroke: var(--color-black);
   }

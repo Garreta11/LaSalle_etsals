@@ -218,6 +218,25 @@ const Canvas = ({ constellations, axes }) => {
                   </g>
                 );
               })}
+
+              {/* === AXES TREE === */}
+              <g className={styles.svg__categories}>
+                <text x={40} y={dimensions.height / 2}>
+                  Research
+                </text>
+                <text x={40} y={dimensions.height / 2 + 50}>
+                  Master
+                </text>
+                <text x={40} y={dimensions.height / 2 + 100}>
+                  2nd Cycle
+                </text>
+                <text x={40} y={dimensions.height / 2 + 150}>
+                  1st Cycle
+                </text>
+                <text x={40} y={dimensions.height / 2 + 250}>
+                  Training Cycles
+                </text>
+              </g>
             </svg>
           </TransformComponent>
         </TransformWrapper>

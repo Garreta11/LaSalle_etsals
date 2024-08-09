@@ -21,8 +21,8 @@ const Canvas = ({ constellations, axes }) => {
 
   // Dimensions
   const [dimensions, setDimensions] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: 0,
+    height: 0,
   });
 
   const [clickTimeout, setClickTimeout] = useState(null);

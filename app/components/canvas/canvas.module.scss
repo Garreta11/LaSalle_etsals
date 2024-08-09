@@ -8,12 +8,15 @@
   width: 100vw;
   height: 100vh;
 
-  &__text {
-    font-size: 7px;
-    text-anchor: middle;
-    cursor: pointer;
+  text {
+    font-size: 5px;
     text-transform: uppercase;
     fill: var(--color-black);
+  }
+
+  &__text {
+    text-anchor: middle;
+    cursor: pointer;    
     &__active {
       fill: var(--color-black);
     }

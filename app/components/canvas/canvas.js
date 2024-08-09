@@ -19,17 +19,23 @@ const Canvas = ({ constellations, axes }) => {
   const [constellationsNodes, setConstellationsNodes] = useState([]);
   const [constellationsLinks, setConstellationsLinks] = useState([]);
 
+  // Axes
+  const [axesNodes, setAxesNodes] = useState([]);
+  const [axesLinks, setAxesLinks] = useState([]);
+
   // Dimensions
   const [dimensions, setDimensions] = useState({
     width: 0,
     height: 0,
   });
 
+  // Info
   const [clickTimeout, setClickTimeout] = useState(null);
   const [info, setInfo] = useState(false);
   const [infoTitle, setInfoTitle] = useState('');
   const [infoDesc, setInfoDesc] = useState('');
 
+  // Dimensions - Event Resize
   useEffect(() => {
     const handleResize = () => {
       setDimensions({ width: window.innerWidth, height: window.innerHeight });
@@ -112,6 +118,67 @@ const Canvas = ({ constellations, axes }) => {
   useEffect(() => {
     if (!axes || axes.length === 0) return;
     console.log(axes);
+
+    const calculateNodeSizes = (node) => {
+      if (!node.children || node.children.length === 0) {
+        node.width = nodeRadius * 2;
+        node.height = nodeRadius * 2;
+      } else {
+        node.children.forEach((child) => calculateNodeSizes(child));
+        const totalWidth = node.children.reduce(
+          (acc, child) => acc + child.width + horizontalSpacing,
+          -horizontalSpacing
+        );
+        node.width = totalWidth;
+        node.height =
+          Math.max(...node.children.map((child) => child.height)) +
+          verticalSpacing;
+      }
+    };
+
+    const calculateNodePositions = (node, startX, depth) => {
+      node.depth = depth;
+      node.y = depth * verticalSpacing;
+      if (!node.children || node.children.length === 0) {
+        node.x = startX;
+      } else {
+        let currentX = startX;
+        node.children.forEach((child) => {
+          calculateNodePositions(child, currentX, depth + 1);
+          currentX += child.width + horizontalSpacing;
+        });
+        node.x =
+          (node.children[0].x + node.children[node.children.length - 1].x) / 2;
+      }
+    };
+
+    const createTree = (data) => {
+      const root = { ...data };
+      calculateNodeSizes(root);
+      calculateNodePositions(root, (dimensions.width - root.width) / 2, 0);
+      const nodes = [];
+      const links = [];
+
+      const traverse = (node) => {
+        nodes.push(node);
+        if (node.children) {
+          node.children.forEach((child) => {
+            links.push({ parent: node, child });
+            traverse(child);
+          });
+        }
+        node.color = 'gray';
+      };
+
+      traverse(root);
+      return { nodes, links };
+    };
+
+    // Assume `constellations` is an array, and we need to handle the first item
+    const { nodes, links } = createTree(axes[0]);
+    setAxesNodes(nodes);
+    setAxesLinks(links);
+    console.log(nodes, links);
   }, [axes, dimensions]);
 
   const handleClick = (_node) => {
@@ -192,6 +259,69 @@ const Canvas = ({ constellations, axes }) => {
                 const isSelected = node.color === 'black';
                 return (
                   <g
+                    key={`constellations-${index}`}
+                    onClick={() => handleClick(node)}
+                    onDoubleClick={() => handleDoucleClick(node)}
+                  >
+                    {node.title?.split(' ').map((word, i) => {
+                      return (
+                        <text
+                          key={i}
+                          x={node.x}
+                          y={node.y + (verticalSpacing / 4 + 7 * i)}
+                          textAnchor='middle'
+                          aria-label={node.title}
+                          role='img'
+                          className={
+                            isSelected
+                              ? `${styles.svg__text} ${styles.svg__text__active}`
+                              : `${styles.svg__text}`
+                          }
+                        >
+                          {word}
+                        </text>
+                      );
+                    })}
+                  </g>
+                );
+              })}
+
+              {/* === AXES TREE === */}
+              {/* Categories */}
+              <g className={styles.svg__categories}>
+                <text x={40} y={dimensions.height / 2}>
+                  Research
+                </text>
+                <text x={40} y={dimensions.height / 2 + 50}>
+                  Master
+                </text>
+                <text x={40} y={dimensions.height / 2 + 100}>
+                  2nd Cycle
+                </text>
+                <text x={40} y={dimensions.height / 2 + 150}>
+                  1st Cycle
+                </text>
+                <text x={40} y={dimensions.height / 2 + 250}>
+                  Training Cycles
+                </text>
+              </g>
+              {/* Render links */}
+              {/* {axesLinks.map((link, index) => (
+                <g key={`axes-${index}`}>
+                  <line
+                    x1={link.parent.x}
+                    y1={link.parent.y + verticalSpacing / 2}
+                    x2={link.child.x}
+                    y2={link.child.y}
+                    className={styles.svg__line}
+                  />
+                </g>
+              ))} */}
+              {/* Render nodes */}
+              {/* {axesNodes.map((node, index) => {
+                const isSelected = node.color === 'black';
+                return (
+                  <g
                     key={`axes-${index}`}
                     onClick={() => handleClick(node)}
                     onDoubleClick={() => handleDoucleClick(node)}
@@ -217,26 +347,7 @@ const Canvas = ({ constellations, axes }) => {
                     })}
                   </g>
                 );
-              })}
-
-              {/* === AXES TREE === */}
-              <g className={styles.svg__categories}>
-                <text x={40} y={dimensions.height / 2}>
-                  Research
-                </text>
-                <text x={40} y={dimensions.height / 2 + 50}>
-                  Master
-                </text>
-                <text x={40} y={dimensions.height / 2 + 100}>
-                  2nd Cycle
-                </text>
-                <text x={40} y={dimensions.height / 2 + 150}>
-                  1st Cycle
-                </text>
-                <text x={40} y={dimensions.height / 2 + 250}>
-                  Training Cycles
-                </text>
-              </g>
+              })} */}
             </svg>
           </TransformComponent>
         </TransformWrapper>

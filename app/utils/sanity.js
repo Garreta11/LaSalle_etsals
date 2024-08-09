@@ -38,14 +38,55 @@ export async function getConstellations() {
 
 export async function getAxes() {
   const query = `
-  *[_type == "axes"]{
+  *[_type == "axes" && title == "Knowledge Axes"]{
     _id,
     title,
     category,
     description,
     "children": children[]->{
       _id,
-      title
+      title,
+      category,
+      "children": children[]->{
+        _id,
+        title,
+        category,
+        "children": children[]->{
+          _id,
+          title,
+          category,
+          "children": children[]->{
+            _id,
+            title,
+            category,
+            "children": children[]->{
+              _id,
+              title,
+              category,
+              "children": children[]->{
+                _id,
+                title,
+                category,
+                "children": children[]->{
+                  _id,
+                  title,
+                  category,
+                  "children": children[]->{
+                    _id,
+                    title,
+                    category,
+                    "children": children[]->{
+                      _id,
+                      title,
+                      category
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
   `;

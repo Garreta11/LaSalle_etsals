@@ -1,0 +1,28 @@
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 30px;
+  background-color: var(--color-gray);
+  font-size: var(--font-size);
+  z-index: 1;
+  &__wrapper {
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    
+    &__values {
+      display: flex;
+      align-items: center;
+      // gap: 140px;
+
+      &__item {
+        cursor: pointer;
+        min-width: 200px;
+      }
+    }
+  }
+}

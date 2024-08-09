@@ -1,0 +1,35 @@
+.header {
+  // position: fixed;
+  width: 100%;
+  top: 0;
+  height: 30px;
+  font-weight: 500;
+  background-color: var(--white);
+  &__wrapper {
+    height: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    &__logo {
+      text-decoration: none;
+      color: var(--black);
+    }
+
+    &__links {
+      display: flex;
+      align-items: center;
+      gap: 120px;
+      &__about {
+        text-decoration: none;
+        color: var(--black);
+      }
+      &__pdf {
+        cursor: pointer;
+      }
+    }
+
+  }
+}

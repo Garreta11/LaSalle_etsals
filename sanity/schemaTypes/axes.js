@@ -1,10 +1,10 @@
-import {AsteriskIcon} from '@sanity/icons'
+import {StarIcon} from '@sanity/icons'
 
 export default {
   name: 'axes',
   type: 'document',
   title: 'Axes',
-  icon: AsteriskIcon,
+  icon: StarIcon,
   fields: [
     {
       title: 'Title',

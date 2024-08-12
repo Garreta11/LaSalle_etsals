@@ -3,8 +3,10 @@
 }
 
 .svg {
-  //position: absolute;
-  // z-index: -1;
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
 
@@ -30,7 +32,26 @@
 
   line {
     stroke: var(--color-black);
+    stroke-width: 0.5;
   }
+
+  
+  [data-category='trainingCycles'] {
+    fill: var(--color-blue);
+  }
+  [data-category='firstCycle'] {
+    fill: var(--color-green);
+  }
+  [data-category='secondCycle'] {
+    fill: var(--color-red);
+  }
+  [data-category='master'] {
+    fill: var(--color-purple);
+  }
+  [data-category='research'] {
+    fill: var(--color-black);
+  }
+  
 }
 
 .info {

@@ -15,9 +15,9 @@ const horizontalSpacing = 1;
 const verticalSpacing = 50;
 
 // axes variables
-const nodeAxesRadius = 8;
-const horizontalAxesSpacing = 17;
-const verticalAxesSpacing = 50;
+const nodeAxesRadius = 4;
+const horizontalAxesSpacing = 25;
+const verticalAxesSpacing = 37;
 
 const Canvas = ({ constellations, axes }) => {
   //Context
@@ -74,6 +74,14 @@ const Canvas = ({ constellations, axes }) => {
       posY: 0,
     },
   ]);
+  // Define the category order
+  const categoryOrder = {
+    research: 0,
+    master: 1,
+    secondCycle: 2,
+    firstCycle: 3,
+    trainingCycles: 4,
+  };
 
   // Dimensions - Event Resize
   useEffect(() => {
@@ -179,8 +187,19 @@ const Canvas = ({ constellations, axes }) => {
 
     const calculateAxesNodePositions = (node, startX, depth) => {
       node.depth = depth;
+      // Sort children by category order before positioning
+      if (node.children && node.children.length > 0) {
+        node.children.sort(
+          (a, b) => categoryOrder[b.category] - categoryOrder[a.category]
+        );
+      }
+
+      // Calculate initial height
       const maxHeight = dimensions.height - 90;
-      node.y = maxHeight - depth * verticalAxesSpacing;
+      let calculatedY = maxHeight - depth * verticalAxesSpacing;
+
+      node.y = calculatedY;
+
       if (!node.children || node.children.length === 0) {
         node.x = startX;
       } else {
@@ -198,8 +217,10 @@ const Canvas = ({ constellations, axes }) => {
       const root = { ...data };
       calculateAxesNodeSizes(root);
       calculateAxesNodePositions(root, (dimensions.width - root.width) / 2, 0);
+
       const nodes = [];
       const links = [];
+      const parentMap = new Map(); // To track parents of nodes
 
       const nodeMap = new Map();
 
@@ -207,10 +228,9 @@ const Canvas = ({ constellations, axes }) => {
         let existingNode = nodeMap.get(node._id);
 
         if (!existingNode) {
-          // If the node is not already in the map, add it
           nodes.push(node);
           nodeMap.set(node._id, node);
-          existingNode = node; // Assign the newly added node
+          existingNode = node;
         }
 
         if (node.children) {
@@ -218,14 +238,18 @@ const Canvas = ({ constellations, axes }) => {
             let childNode = nodeMap.get(child._id);
 
             if (!childNode) {
-              // If the child node is not already in the map, add it
               nodes.push(child);
               nodeMap.set(child._id, child);
-              childNode = child; // Assign the newly added child node
+              childNode = child;
             }
 
-            // Add the link between the existing (or newly added) nodes
             links.push({ parent: existingNode, child: childNode });
+
+            // Track parent nodes
+            if (!parentMap.has(child._id)) {
+              parentMap.set(child._id, []);
+            }
+            parentMap.get(child._id).push(existingNode);
 
             traverse(child);
           });
@@ -234,14 +258,44 @@ const Canvas = ({ constellations, axes }) => {
       };
 
       traverse(root);
+
+      // Update X position for nodes with multiple parents
+      nodes.forEach((node) => {
+        const parents = parentMap.get(node._id);
+        if (parents && parents.length > 1) {
+          const averageX =
+            parents.reduce((acc, parent) => acc + parent.x, 0) / parents.length;
+          node.x = averageX;
+          console.log(node.title, parents);
+        }
+      });
+
       return { nodes, links };
     };
 
     // Assume `axes` is an array, and we need to handle the first item
     const { nodes, links } = createAxesTree(axes[0]);
+
+    // Move nodes with category "master" and "research" up one position Y
+    nodes.forEach((node) => {
+      if (node.category === 'master' || node.category === 'research') {
+        node.y -= verticalAxesSpacing; // Move the node up
+      }
+    });
+
     setAxesNodes(nodes);
     setAxesLinks(links);
 
+    // Move nodes with category "master" and "research" up one position Y
+    nodes.forEach((node) => {
+      if (node.category === 'master') {
+        node.y -= verticalAxesSpacing; // Move the node up
+      } else if (node.category === 'research') {
+        node.y -= 2 * verticalAxesSpacing; // Move the node up
+      }
+    });
+
+    // Set position Y for category title
     const categoriesPosition = (nodes) => {
       const maxValuesByCategory = nodes.reduce((acc, item) => {
         const { category, y } = item;
@@ -264,8 +318,8 @@ const Canvas = ({ constellations, axes }) => {
   }, [axes, dimensions]);
 
   // GSAP ANIMATION
-  useEffect(() => {
-    /* if (
+  /* useEffect(() => {
+    if (
       axesNodes.length === 0 ||
       axesLinks.length === 0 ||
       constellationsLinks.length === 0 ||
@@ -302,8 +356,8 @@ const Canvas = ({ constellations, axes }) => {
           ease: 'power1.inOut',
         },
       }
-    ); */
-  }, [axesNodes, axesLinks, constellationsLinks, constellationsNodes]);
+    );
+  }, [axesNodes, axesLinks, constellationsLinks, constellationsNodes]); */
 
   // Handle Click -- Add to Active Constellations
   const handleClick = (_node) => {

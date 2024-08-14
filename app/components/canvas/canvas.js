@@ -221,8 +221,8 @@ const Canvas = ({ constellations, axes }) => {
       const nodes = [];
       const links = [];
       const parentMap = new Map(); // To track parents of nodes
-
       const nodeMap = new Map();
+      const occupiedPositions = new Map(); // To track occupied positions
 
       const traverse = (node) => {
         let existingNode = nodeMap.get(node._id);
@@ -249,7 +249,11 @@ const Canvas = ({ constellations, axes }) => {
             if (!parentMap.has(child._id)) {
               parentMap.set(child._id, []);
             }
-            parentMap.get(child._id).push(existingNode);
+            //parentMap.get(child._id).push(existingNode);
+            const parentList = parentMap.get(child._id);
+            if (!parentList.some((parent) => parent._id === existingNode._id)) {
+              parentList.push(existingNode);
+            }
 
             traverse(child);
           });
@@ -269,19 +273,58 @@ const Canvas = ({ constellations, axes }) => {
           console.log(node.title, parents);
         }
       });
+      // Update X position for nodes with multiple parents and no siblings
+      /* nodes.forEach((node) => {
+        const parents = parentMap.get(node._id);
+        if (parents && parents.length > 1) {
+          // Check if the node has siblings
+          const hasSiblings = parents.some(
+            (parent) => parent.children && parent.children.length > 1
+          );
+
+          // Only update X position if the node has no siblings
+          if (!hasSiblings) {
+            const averageX =
+              parents.reduce((acc, parent) => acc + parent.x, 0) /
+              parents.length;
+            node.x = averageX;
+            console.log(node.title, parents);
+          }
+        }
+      }); */
+      // Adjust positions to prevent overlap
+      nodes.forEach((node) => {
+        const positionKey = `${node.x}-${node.y}`;
+
+        // Check if the position is already occupied
+        /* if (occupiedPositions.has(positionKey)) {
+          // Adjust the node's x position to avoid overlap
+          let offsetX = horizontalAxesSpacing; // You can adjust this value to control the spacing
+          while (occupiedPositions.has(`${node.x + offsetX}-${node.y}`)) {
+            offsetX += horizontalAxesSpacing; // Increment the offset until a free spot is found
+          }
+          node.x += offsetX;
+        } */
+
+        // Mark the position as occupied
+        occupiedPositions.set(`${node.x}-${node.y}`, node);
+      });
+
+      // Post-processing step to align child nodes with their parent if the parent has only one child
+      nodes.forEach((node) => {
+        if (node.children && node.children.length === 1) {
+          const child = node.children[0];
+          if (child) {
+            child.x = node.x; // Align the child's x position with the parent's x position
+          }
+        }
+      });
 
       return { nodes, links };
     };
 
     // Assume `axes` is an array, and we need to handle the first item
     const { nodes, links } = createAxesTree(axes[0]);
-
-    // Move nodes with category "master" and "research" up one position Y
-    nodes.forEach((node) => {
-      if (node.category === 'master' || node.category === 'research') {
-        node.y -= verticalAxesSpacing; // Move the node up
-      }
-    });
 
     setAxesNodes(nodes);
     setAxesLinks(links);
@@ -291,7 +334,19 @@ const Canvas = ({ constellations, axes }) => {
       if (node.category === 'master') {
         node.y -= verticalAxesSpacing; // Move the node up
       } else if (node.category === 'research') {
-        node.y -= 2 * verticalAxesSpacing; // Move the node up
+        node.y -= 3 * verticalAxesSpacing; // Move the node up
+      }
+    });
+
+    // Find the minimum y position in the graph
+    const minY = Math.min(...nodes.map((node) => node.y));
+    // Align research nodes without children to the minimum y position
+    nodes.forEach((node) => {
+      if (
+        node.category === 'research' &&
+        (!node.children || node.children.length === 0)
+      ) {
+        node.y = minY;
       }
     });
 
@@ -388,6 +443,33 @@ const Canvas = ({ constellations, axes }) => {
     setInfoTitle(_node.title);
     setInfoDesc(_node.description[0].children[0].text);
     setInfo(true);
+  };
+
+  const splitTextIntoLines = (text, maxWidth, maxLines) => {
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = '';
+
+    words.forEach((word) => {
+      const testLine = currentLine + (currentLine ? ' ' : '') + word;
+
+      if (testLine.length <= maxWidth) {
+        currentLine = testLine;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+
+      if (lines.length === maxLines - 1) {
+        lines.push(
+          currentLine + ' ' + words.slice(words.indexOf(word) + 1).join(' ')
+        );
+        return;
+      }
+    });
+
+    if (currentLine) lines.push(currentLine);
+    return lines.slice(0, maxLines);
   };
 
   return (
@@ -491,9 +573,9 @@ const Canvas = ({ constellations, axes }) => {
                   <g key={`axes-${index}`}>
                     <line
                       x1={link.parent.x}
-                      y1={link.parent.y + verticalAxesSpacing / 2 - 20}
+                      y1={link.parent.y + verticalAxesSpacing / 2 - 15}
                       x2={link.child.x}
-                      y2={link.child.y + 20}
+                      y2={link.child.y + 30}
                       className={styles.svg__line}
                     />
                   </g>
@@ -501,31 +583,31 @@ const Canvas = ({ constellations, axes }) => {
                 {/* Render nodes */}
                 {axesNodes.map((node, index) => {
                   const isSelected = node.color === 'black';
+                  const lines = splitTextIntoLines(node.title, 30, 3); // Adjust maxWidth according to your needs
+                  console.log(lines);
                   return (
                     <g
                       key={`axes-${index}`}
                       onDoubleClick={() => handleDoubleClick(node)}
                     >
-                      {node.title?.split(' ').map((word, i) => {
-                        return (
-                          <text
-                            data-category={`${node.category}`}
-                            key={i}
-                            x={node.x}
-                            y={node.y + (verticalAxesSpacing / 3 + 7 * i)}
-                            textAnchor='middle'
-                            aria-label={node.title}
-                            role='img'
-                            className={
-                              isSelected
-                                ? `${styles.svg__text} ${styles.svg__text__active}`
-                                : `${styles.svg__text}`
-                            }
-                          >
-                            {word}
-                          </text>
-                        );
-                      })}
+                      {lines.map((line, i) => (
+                        <text
+                          data-category={node.category}
+                          key={i}
+                          x={node.x}
+                          y={node.y + (verticalAxesSpacing / 3 + 7 * i)}
+                          textAnchor='middle'
+                          aria-label={node.title}
+                          role='img'
+                          className={
+                            isSelected
+                              ? `${styles.svg__text} ${styles.svg__text__active}`
+                              : `${styles.svg__text}`
+                          }
+                        >
+                          {line}
+                        </text>
+                      ))}
                     </g>
                   );
                 })}

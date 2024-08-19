@@ -10,15 +10,18 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { useData } from '@/app/DataContext';
 
 // constellations variables
-const nodeRadius = 18;
-const horizontalSpacing = 1;
-const verticalSpacing = 50;
+const nodeRadius = 15;
+const horizontalSpacing = 8;
+const verticalSpacing = 35;
 
 // axes variables
-const nodeAxesRadius = 4;
+const nodeAxesRadius = 15;
+const horizontalAxesSpacing = 3;
+const verticalAxesSpacing = 35;
+/* const nodeAxesRadius = 4;
 const horizontalAxesSpacing = 25;
 const verticalAxesSpacing = 37;
-
+ */
 const Canvas = ({ constellations, axes }) => {
   //Context
   const { activeConst, addToActiveConst } = useData();

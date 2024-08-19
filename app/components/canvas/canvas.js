@@ -10,14 +10,14 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { useData } from '@/app/DataContext';
 
 // constellations variables
-const nodeRadius = 20;
+const nodeRadius = 15;
 const horizontalSpacing = 1;
 const verticalSpacing = 50;
 
 // axes variables
 const nodeAxesRadius = 4;
-const horizontalAxesSpacing = 25;
-const verticalAxesSpacing = 37;
+const horizontalAxesSpacing = 15;
+const verticalAxesSpacing = 35;
 
 const Canvas = ({ constellations, axes }) => {
   //Context
@@ -99,6 +99,7 @@ const Canvas = ({ constellations, axes }) => {
 
   // Constellations
   useEffect(() => {
+    console.log(dimensions);
     if (!constellations || constellations.length === 0) return;
 
     const startHeight = 100;
@@ -270,7 +271,6 @@ const Canvas = ({ constellations, axes }) => {
           const averageX =
             parents.reduce((acc, parent) => acc + parent.x, 0) / parents.length;
           node.x = averageX;
-          console.log(node.title, parents);
         }
       });
       // Update X position for nodes with multiple parents and no siblings
@@ -480,7 +480,12 @@ const Canvas = ({ constellations, axes }) => {
           className={styles.svg__wrapper}
         >
           <TransformComponent className={styles.svg__wrapper__component}>
-            <svg viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}>
+            <svg
+              viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
+              preserveAspectRatio='xMidYMin meet'
+              width='100%'
+              height='100%'
+            >
               {/* === CONSTELLATIONS TREE === */}
               <g ref={attributesSvgRef}>
                 {/* Render links */}
@@ -531,7 +536,7 @@ const Canvas = ({ constellations, axes }) => {
                           <text
                             key={i}
                             x={node.x}
-                            y={node.y + (verticalSpacing / 4 + 7 * i)}
+                            y={node.y + (verticalSpacing / 4 + 5 * i)}
                             textAnchor='middle'
                             aria-label={node.title}
                             role='img'
@@ -583,8 +588,7 @@ const Canvas = ({ constellations, axes }) => {
                 {/* Render nodes */}
                 {axesNodes.map((node, index) => {
                   const isSelected = node.color === 'black';
-                  const lines = splitTextIntoLines(node.title, 30, 3); // Adjust maxWidth according to your needs
-                  console.log(lines);
+                  const lines = splitTextIntoLines(node.title, 10, 3); // Adjust maxWidth according to your needs
                   return (
                     <g
                       key={`axes-${index}`}
@@ -595,7 +599,7 @@ const Canvas = ({ constellations, axes }) => {
                           data-category={node.category}
                           key={i}
                           x={node.x}
-                          y={node.y + (verticalAxesSpacing / 3 + 7 * i)}
+                          y={node.y + (verticalAxesSpacing / 3 + 5 * i)}
                           textAnchor='middle'
                           aria-label={node.title}
                           role='img'

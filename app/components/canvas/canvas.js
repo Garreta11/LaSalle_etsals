@@ -10,14 +10,14 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { useData } from '@/app/DataContext';
 
 // constellations variables
-const nodeRadius = 15;
+const nodeRadius = 18;
 const horizontalSpacing = 1;
 const verticalSpacing = 50;
 
 // axes variables
 const nodeAxesRadius = 4;
-const horizontalAxesSpacing = 15;
-const verticalAxesSpacing = 35;
+const horizontalAxesSpacing = 25;
+const verticalAxesSpacing = 37;
 
 const Canvas = ({ constellations, axes }) => {
   //Context
@@ -482,7 +482,9 @@ const Canvas = ({ constellations, axes }) => {
           <TransformComponent className={styles.svg__wrapper__component}>
             <svg
               viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
-              preserveAspectRatio='xMidYMin meet'
+              preserveAspectRatio='xMidYMid meet'
+              // width='100%'
+              // height='100%'
               width='100%'
               height='100%'
             >
@@ -536,7 +538,7 @@ const Canvas = ({ constellations, axes }) => {
                           <text
                             key={i}
                             x={node.x}
-                            y={node.y + (verticalSpacing / 4 + 5 * i)}
+                            y={node.y + (verticalSpacing / 4 + 7 * i)}
                             textAnchor='middle'
                             aria-label={node.title}
                             role='img'
@@ -599,7 +601,7 @@ const Canvas = ({ constellations, axes }) => {
                           data-category={node.category}
                           key={i}
                           x={node.x}
-                          y={node.y + (verticalAxesSpacing / 3 + 5 * i)}
+                          y={node.y + (verticalAxesSpacing / 3 + 7 * i)}
                           textAnchor='middle'
                           aria-label={node.title}
                           role='img'

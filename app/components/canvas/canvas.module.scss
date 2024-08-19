@@ -11,7 +11,7 @@
   height: 100vh;
 
   text {
-    font-size: 3px;
+    font-size: 5px;
     text-transform: uppercase;
     fill: var(--color-black);
   }
@@ -25,7 +25,6 @@
   }
 
   &__categories {
-    font-size: 7px;
     text-transform: uppercase;
     fill: var(--color-black);
   }

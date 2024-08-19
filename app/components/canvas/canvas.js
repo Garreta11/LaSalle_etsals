@@ -199,7 +199,7 @@ const Canvas = ({ constellations, axes }) => {
       }
 
       // Calculate initial height
-      const maxHeight = dimensions.height - 90;
+      const maxHeight = dimensions.height - 60;
       let calculatedY = maxHeight - depth * verticalAxesSpacing;
 
       node.y = calculatedY;
@@ -569,7 +569,7 @@ const Canvas = ({ constellations, axes }) => {
                       <text
                         key={index}
                         data-category={cat.name}
-                        x={40}
+                        x={20}
                         y={cat.posY}
                       >
                         {cat.title}

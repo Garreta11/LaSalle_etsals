@@ -93,3 +93,23 @@ export async function getAxes() {
   const data = await client.fetch(query);
   return data;
 }
+
+export async function getExternalConnections() {
+  const query = `
+  *[_type == "external"]{
+    _id,
+    title,
+    "connection1": connection1->{
+      _id,
+      title
+    },
+    "connection2": connection2->{
+      _id,
+      title
+    }
+  }
+  `;
+
+  const data = await client.fetch(query);
+  return data;
+}

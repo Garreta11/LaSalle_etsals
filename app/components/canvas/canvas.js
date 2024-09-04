@@ -18,11 +18,8 @@ const verticalSpacing = 35;
 const nodeAxesRadius = 15;
 const horizontalAxesSpacing = 3;
 const verticalAxesSpacing = 35;
-/* const nodeAxesRadius = 4;
-const horizontalAxesSpacing = 25;
-const verticalAxesSpacing = 37;
- */
-const Canvas = ({ constellations, axes }) => {
+
+const Canvas = ({ constellations, axes, external }) => {
   //Context
   const { activeConst, addToActiveConst } = useData();
 
@@ -33,6 +30,9 @@ const Canvas = ({ constellations, axes }) => {
   // Axes
   const [axesNodes, setAxesNodes] = useState([]);
   const [axesLinks, setAxesLinks] = useState([]);
+
+  // External Connections
+  const [externalNodes, setExternalNodes] = useState([]);
 
   const attributesSvgRef = useRef(null);
   const axesSvgRef = useRef(null);
@@ -102,7 +102,6 @@ const Canvas = ({ constellations, axes }) => {
 
   // Constellations
   useEffect(() => {
-    console.log(dimensions);
     if (!constellations || constellations.length === 0) return;
 
     const startHeight = 100;
@@ -375,6 +374,41 @@ const Canvas = ({ constellations, axes }) => {
     categoriesPosition(nodes);
   }, [axes, dimensions]);
 
+  // External Connections
+  useEffect(() => {
+    // console.log(external);
+    if (constellationsNodes.length <= 0 || axesNodes.length <= 0) return;
+    const newExternalNodes = [...externalNodes];
+
+    external.forEach((ext, i) => {
+      // Find the item1 with the specific _id
+      let item1 = constellationsNodes.find(
+        (item) => item._id === ext.connection1._id
+      );
+      if (item1 === undefined)
+        item1 = axesNodes.find((item) => item._id === ext.connection2._id);
+      // Find the item2 with the specific _id
+      let item2 = constellationsNodes.find(
+        (item) => item._id === ext.connection2._id
+      );
+      if (item2 === undefined)
+        item2 = axesNodes.find((item) => item._id === ext.connection2._id);
+
+      const newExternal = {
+        x1: item1.x,
+        y1: item1.y,
+        x2: item2.x,
+        y2: item2.y,
+        // Optionally, add control points for the curve
+        cx: (item1.x + item2.x) / 2, // Midpoint control point for curve
+        cy: item2.y + 100, // Adjust control point for curvature
+      };
+
+      newExternalNodes.push(newExternal);
+    });
+    setExternalNodes(newExternalNodes);
+  }, [constellationsNodes, axesNodes]);
+
   // GSAP ANIMATION
   /* useEffect(() => {
     if (
@@ -486,8 +520,6 @@ const Canvas = ({ constellations, axes }) => {
             <svg
               viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
               preserveAspectRatio='xMidYMid meet'
-              // width='100%'
-              // height='100%'
               width='100%'
               height='100%'
             >
@@ -620,6 +652,28 @@ const Canvas = ({ constellations, axes }) => {
                     </g>
                   );
                 })}
+              </g>
+
+              {/* === EXTERNAL NODES === */}
+              <g>
+                {externalNodes.map((node, index) => (
+                  <>
+                    {/*   <line
+                      key={index}
+                      x1={node.x1}
+                      y1={node.y1}
+                      x2={node.x2}
+                      y2={node.y2}
+                    /> */}
+                    <path
+                      key={index}
+                      d={`M ${node.x1},${node.y1} Q ${node.cx},${node.cy} ${node.x2},${node.y2}`}
+                      fill='transparent'
+                      stroke='black'
+                      strokeWidth='0.5'
+                    />
+                  </>
+                ))}
               </g>
             </svg>
           </TransformComponent>

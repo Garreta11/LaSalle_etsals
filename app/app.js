@@ -15,9 +15,7 @@ const App = ({ constellations, axes, external }) => {
   const screenRef = useRef();
 
   const handleDownload = () => {
-    console.log('Download SVG ON APP');
     const input = screenRef.current;
-    console.log(input);
 
     setTimeout(() => {
       html2canvas(input, { useCORS: true }).then((canvas) => {

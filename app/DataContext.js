@@ -1,9 +1,10 @@
 // DataContext.js
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useRef } from 'react';
 
 const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
+  const transformWrapperRef = useRef(null);
   const [activeConst, setActiveConst] = useState([]);
 
   // Function to update activeConst by adding a new item
@@ -29,6 +30,7 @@ export const DataProvider = ({ children }) => {
   return (
     <DataContext.Provider
       value={{
+        transformWrapperRef,
         activeConst,
         addToActiveConst,
         removeFromActiveConst,

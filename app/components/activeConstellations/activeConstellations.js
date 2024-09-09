@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import styles from './activeConstellations.module.scss';
 import { useData } from '@/app/DataContext';
@@ -7,11 +7,25 @@ import { useData } from '@/app/DataContext';
 const colors = ['#C6FF6A', '#FCFF6C', '#E18DFF', '#89F8FF'];
 
 const ActiveConstellations = () => {
-  //Context
+  // Context
   const { activeConst, removeFromActiveConst } = useData();
+
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [hoverColor, setHoverColor] = useState('');
 
   const handleRemoveItem = (_item) => {
     removeFromActiveConst(_item.id);
+  };
+
+  const handleMouseEnter = (index) => {
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    setHoveredIndex(index);
+    setHoverColor(randomColor);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredIndex(null);
+    setHoverColor('');
   };
 
   return (
@@ -23,13 +37,16 @@ const ActiveConstellations = () => {
         <div className={styles.active__list}>
           <div className={styles.active__list__wrapper}>
             {activeConst.map((c, i) => {
-              const randomColor = colors[Math.floor(i % colors.length)];
-
               return (
                 <div
                   key={i}
                   className={styles.active__list__wrapper__item}
-                  style={{ backgroundColor: randomColor }}
+                  style={{
+                    backgroundColor:
+                      hoveredIndex === i ? hoverColor : 'initial',
+                  }}
+                  onMouseEnter={() => handleMouseEnter(i)}
+                  onMouseLeave={handleMouseLeave}
                 >
                   <Image
                     className={styles.active__list__wrapper__item__remove}

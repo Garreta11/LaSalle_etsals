@@ -17,11 +17,30 @@
     &__values {
       display: flex;
       align-items: center;
-      // gap: 140px;
 
       &__item {
         cursor: pointer;
         min-width: 200px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 13px;
+
+        &::after {
+          content: '';
+          display: block;
+          width: 13px;
+          height: 13px;
+          border-radius: 50%;
+          background-color: transparent;
+        }
+        &:hover {
+          &::after {
+            background-color: var(--color-black);
+          }
+        }
+
       }
     }
   }

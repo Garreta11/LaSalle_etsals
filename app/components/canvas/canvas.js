@@ -22,6 +22,8 @@ const verticalAxesSpacing = 35;
 const colors = ['#C6FF6A', '#FCFF6C', '#E18DFF', '#89F8FF'];
 
 const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
+  const transformWrapperRef = useData();
+
   //Context
   const { activeConst, addToActiveConst } = useData();
 
@@ -400,7 +402,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
         id1: item1._id,
         id2: item2._id,
         x1: item1.x,
-        y1: item1.y,
+        y1: item1.y + verticalSpacing / 2,
         x2: item2.x,
         y2: item2.y,
         // Optionally, add control points for the curve
@@ -549,6 +551,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
     <div className={styles.canvas}>
       <div ref={ref} className={styles.svg}>
         <TransformWrapper
+          ref={transformWrapperRef}
           doubleClick={{ disabled: true }}
           className={styles.svg__wrapper}
         >

@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, forwardRef } from 'react';
 import Image from 'next/image';
 import styles from './canvas.module.scss';
 
@@ -10,7 +10,7 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { useData } from '@/app/DataContext';
 
 // constellations variables
-const nodeRadius = 15;
+const nodeRadius = 16;
 const horizontalSpacing = 8;
 const verticalSpacing = 35;
 
@@ -19,7 +19,9 @@ const nodeAxesRadius = 15;
 const horizontalAxesSpacing = 3;
 const verticalAxesSpacing = 35;
 
-const Canvas = ({ constellations, axes, external }) => {
+const colors = ['#C6FF6A', '#FCFF6C', '#E18DFF', '#89F8FF'];
+
+const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
   //Context
   const { activeConst, addToActiveConst } = useData();
 
@@ -374,7 +376,7 @@ const Canvas = ({ constellations, axes, external }) => {
     categoriesPosition(nodes);
   }, [axes, dimensions]);
 
-  // External Connections
+  // Create ALL External Connections
   useEffect(() => {
     // console.log(external);
     if (constellationsNodes.length <= 0 || axesNodes.length <= 0) return;
@@ -395,19 +397,45 @@ const Canvas = ({ constellations, axes, external }) => {
         item2 = axesNodes.find((item) => item._id === ext.connection2._id);
 
       const newExternal = {
+        id1: item1._id,
+        id2: item2._id,
         x1: item1.x,
         y1: item1.y,
         x2: item2.x,
         y2: item2.y,
         // Optionally, add control points for the curve
         cx: (item1.x + item2.x) / 2, // Midpoint control point for curve
-        cy: item2.y + 100, // Adjust control point for curvature
+        cy: item2.y + 50, // Adjust control point for curvature
+        show: false,
       };
 
       newExternalNodes.push(newExternal);
     });
     setExternalNodes(newExternalNodes);
   }, [constellationsNodes, axesNodes]);
+
+  // Show Active External Connections
+  useEffect(() => {
+    // Extract all IDs from firstArray
+    const ids = activeConst.map((item) => item.id);
+
+    // Determine if `firstArray` is empty
+    const shouldUpdateShow = ids.length > 0;
+
+    // Iterate over the second array and update the `show` property based on the condition
+    const updatedArray = externalNodes.map((item) => {
+      if (shouldUpdateShow) {
+        // If `ids` is not empty, set `show` to true if `id1` or `id2` matches any ID in `ids`
+        return ids.includes(item.id1) || ids.includes(item.id2)
+          ? { ...item, show: true }
+          : { ...item, show: false };
+      } else {
+        // If `firstArray` is empty, set all `show` properties to false
+        return { ...item, show: false };
+      }
+    });
+    setExternalNodes(updatedArray);
+  }, [activeConst]);
 
   // GSAP ANIMATION
   /* useEffect(() => {
@@ -461,7 +489,11 @@ const Canvas = ({ constellations, axes, external }) => {
         console.log('Single click detected');
         // Handle single click logic here
         const item = { title: _node.title, id: _node._id };
-        addToActiveConst(item);
+
+        const idExists = externalNodes.some(
+          (obj) => obj.id1 === item.id || obj.id2 === item.id
+        );
+        if (idExists) addToActiveConst(item);
 
         setClickTimeout(null);
       }, 300); // Wait 300ms to see if another click comes in
@@ -484,6 +516,10 @@ const Canvas = ({ constellations, axes, external }) => {
 
   const splitTextIntoLines = (text, maxWidth, maxLines) => {
     const words = text.split(' ');
+    // If there's only one word, return it as the only line
+    if (words.length === 1) {
+      return [text];
+    }
     const lines = [];
     let currentLine = '';
 
@@ -511,7 +547,7 @@ const Canvas = ({ constellations, axes, external }) => {
 
   return (
     <div className={styles.canvas}>
-      <div className={styles.svg}>
+      <div ref={ref} className={styles.svg}>
         <TransformWrapper
           doubleClick={{ disabled: true }}
           className={styles.svg__wrapper}
@@ -562,29 +598,35 @@ const Canvas = ({ constellations, axes, external }) => {
                 {/* Render nodes */}
                 {constellationsNodes.map((node, index) => {
                   const isSelected = node.color === 'black';
+
+                  const nodeHasExternalNodes = externalNodes.some(
+                    (obj) => obj.id1 === node._id || obj.id2 === node._id
+                  );
+
+                  // Select a random color from the array
+                  const randomColor = nodeHasExternalNodes
+                    ? colors[Math.floor(index % colors.length)]
+                    : 'transparent';
+
+                  const textLines = splitTextIntoLines(node.title, 13, 3);
                   return (
                     <g
                       key={`constellations-${index}`}
                       onClick={() => handleClick(node)}
                       onDoubleClick={() => handleDoubleClick(node)}
                     >
-                      {node.title?.split(' ').map((word, i) => {
+                      {textLines.map((word, i) => {
                         return (
-                          <text
+                          <TextWithRect
                             key={i}
+                            color={randomColor}
+                            i={i}
+                            text={word}
                             x={node.x}
                             y={node.y + (verticalSpacing / 4 + 7 * i)}
-                            textAnchor='middle'
-                            aria-label={node.title}
-                            role='img'
-                            className={
-                              isSelected
-                                ? `${styles.svg__text} ${styles.svg__text__active}`
-                                : `${styles.svg__text}`
-                            }
-                          >
-                            {word}
-                          </text>
+                            styles={styles}
+                            cursor={nodeHasExternalNodes}
+                          />
                         );
                       })}
                     </g>
@@ -625,13 +667,13 @@ const Canvas = ({ constellations, axes, external }) => {
                 {/* Render nodes */}
                 {axesNodes.map((node, index) => {
                   const isSelected = node.color === 'black';
-                  const lines = splitTextIntoLines(node.title, 10, 3); // Adjust maxWidth according to your needs
+                  const textLines = splitTextIntoLines(node.title, 10, 3); // Adjust maxWidth according to your needs
                   return (
                     <g
                       key={`axes-${index}`}
                       onDoubleClick={() => handleDoubleClick(node)}
                     >
-                      {lines.map((line, i) => (
+                      {textLines.map((line, i) => (
                         <text
                           data-category={node.category}
                           key={i}
@@ -656,24 +698,18 @@ const Canvas = ({ constellations, axes, external }) => {
 
               {/* === EXTERNAL NODES === */}
               <g>
-                {externalNodes.map((node, index) => (
-                  <>
-                    {/*   <line
-                      key={index}
-                      x1={node.x1}
-                      y1={node.y1}
-                      x2={node.x2}
-                      y2={node.y2}
-                    /> */}
-                    <path
-                      key={index}
-                      d={`M ${node.x1},${node.y1} Q ${node.cx},${node.cy} ${node.x2},${node.y2}`}
-                      fill='transparent'
-                      stroke='black'
-                      strokeWidth='0.5'
-                    />
-                  </>
-                ))}
+                {externalNodes.map(
+                  (node, index) =>
+                    node.show && (
+                      <path
+                        key={index}
+                        d={`M ${node.x1},${node.y1} Q ${node.cx},${node.cy} ${node.x2},${node.y2}`}
+                        fill='transparent'
+                        stroke='black'
+                        strokeWidth='0.5'
+                      />
+                    )
+                )}
               </g>
             </svg>
           </TransformComponent>
@@ -698,6 +734,50 @@ const Canvas = ({ constellations, axes, external }) => {
       )}
     </div>
   );
-};
-
+});
+// Set a display name for the component
+Canvas.displayName = 'Canvas';
 export default Canvas;
+
+const TextWithRect = ({ text, x, y, i, styles, color, cursor }) => {
+  const textRef = useRef(null);
+  const [textSize, setTextSize] = useState({ width: 0, height: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    if (textRef.current) {
+      const bbox = textRef.current.getBBox();
+      setTextSize({ width: bbox.width, height: bbox.height });
+    }
+  }, [text]);
+  return (
+    <g
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <rect
+        width={textSize.width + 5} // Add some padding
+        height={textSize.height + 5} // Add some padding
+        x={x - textSize.width / 2 - 2.5} // Adjust x position if needed
+        y={y - textSize.height / 2 - 5} // Center the rect vertically with the text
+        fill={color}
+        style={{
+          opacity: isHovered ? 1 : 0, // Show rect only on hover
+          transition: 'opacity 0.3s ease',
+        }}
+      />
+      <text
+        key={i}
+        ref={textRef}
+        x={x}
+        y={y}
+        textAnchor='middle'
+        aria-label={text}
+        role='img'
+        className={`${cursor ? styles.svg__text__cursor : ''} ${styles.svg__text}`}
+      >
+        {text}
+      </text>
+    </g>
+  );
+};

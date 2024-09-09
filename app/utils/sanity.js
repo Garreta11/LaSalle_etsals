@@ -47,38 +47,47 @@ export async function getAxes() {
       _id,
       title,
       category,
+      description,
       "children": children[]->{
         _id,
         title,
         category,
+        description,
         "children": children[]->{
           _id,
           title,
           category,
+          description,
           "children": children[]->{
             _id,
             title,
             category,
+            description,
             "children": children[]->{
               _id,
               title,
               category,
+              description,
               "children": children[]->{
                 _id,
                 title,
                 category,
+                description,
                 "children": children[]->{
                   _id,
                   title,
                   category,
+                  description,
                   "children": children[]->{
                     _id,
                     title,
                     category,
+                    description,
                     "children": children[]->{
                       _id,
                       title,
-                      category
+                      category,
+                      description
                     }
                   }
                 }

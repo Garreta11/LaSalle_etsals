@@ -2,10 +2,7 @@
 import React from 'react';
 import styles from './header.module.scss';
 
-const Header = () => {
-  const handleDownload = () => {
-    console.log('Download SVG');
-  };
+const Header = ({ handleDownloadAPP }) => {
   return (
     <header className={styles.header}>
       <div className={styles.header__wrapper}>
@@ -19,7 +16,7 @@ const Header = () => {
           </a>
           <p
             className={styles.header__wrapper__links__pdf}
-            onClick={handleDownload}
+            onClick={handleDownloadAPP}
           >
             Export pdf
           </p>

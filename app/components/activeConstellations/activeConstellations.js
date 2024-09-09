@@ -1,8 +1,10 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import styles from './activeConstellations.module.scss';
 import { useData } from '@/app/DataContext';
+
+const colors = ['#C6FF6A', '#FCFF6C', '#E18DFF', '#89F8FF'];
 
 const ActiveConstellations = () => {
   //Context
@@ -21,9 +23,14 @@ const ActiveConstellations = () => {
         <div className={styles.active__list}>
           <div className={styles.active__list__wrapper}>
             {activeConst.map((c, i) => {
-              console.log(c);
+              const randomColor = colors[Math.floor(i % colors.length)];
+
               return (
-                <div key={i} className={styles.active__list__wrapper__item}>
+                <div
+                  key={i}
+                  className={styles.active__list__wrapper__item}
+                  style={{ backgroundColor: randomColor }}
+                >
                   <Image
                     className={styles.active__list__wrapper__item__remove}
                     src='/close-black.svg'

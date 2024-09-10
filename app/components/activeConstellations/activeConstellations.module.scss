@@ -18,6 +18,14 @@
     background-color: var(--color-white);
     color: var(--color-black);
 
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out;
+
+    &__open {
+      max-height: 200px;
+    }
+
     &__wrapper {
       display: flex;
       flex-wrap: wrap;

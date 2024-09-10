@@ -11,7 +11,9 @@ export const DataProvider = ({ children }) => {
   const addToActiveConst = (newItem) => {
     setActiveConst((prevActiveConst) => {
       // Check if an item with the same id already exists
-      const itemExists = prevActiveConst.some((item) => item.id === newItem.id);
+      const itemExists = prevActiveConst.some(
+        (item) => item._id === newItem._id
+      );
       if (itemExists) {
         return prevActiveConst; // Do not add the item if it exists
       }
@@ -23,7 +25,7 @@ export const DataProvider = ({ children }) => {
   // Function to remove a specific item from the activeConst array
   const removeFromActiveConst = (idToRemove) => {
     setActiveConst((prevActiveConst) =>
-      prevActiveConst.filter((item) => item.id !== idToRemove)
+      prevActiveConst.filter((item) => item._id !== idToRemove)
     );
   };
 

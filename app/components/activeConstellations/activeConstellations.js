@@ -14,7 +14,7 @@ const ActiveConstellations = () => {
   const [hoverColor, setHoverColor] = useState('');
 
   const handleRemoveItem = (_item) => {
-    removeFromActiveConst(_item.id);
+    removeFromActiveConst(_item._id);
   };
 
   const handleMouseEnter = (index) => {
@@ -33,36 +33,38 @@ const ActiveConstellations = () => {
       <div className={styles.active__wrapper}>
         <p>Active constellations ({activeConst.length})</p>
       </div>
-      {activeConst.length > 0 && (
-        <div className={styles.active__list}>
-          <div className={styles.active__list__wrapper}>
-            {activeConst.map((c, i) => {
-              return (
-                <div
-                  key={i}
-                  className={styles.active__list__wrapper__item}
-                  style={{
-                    backgroundColor:
-                      hoveredIndex === i ? hoverColor : 'initial',
-                  }}
-                  onMouseEnter={() => handleMouseEnter(i)}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <Image
-                    className={styles.active__list__wrapper__item__remove}
-                    src='/close-black.svg'
-                    alt='close'
-                    width={12}
-                    height={12}
-                    onClick={() => handleRemoveItem(c)}
-                  />
-                  {c.title}
-                </div>
-              );
-            })}
-          </div>
+
+      <div
+        className={`${styles.active__list} ${
+          activeConst.length > 0 ? styles.active__list__open : ''
+        }`}
+      >
+        <div className={styles.active__list__wrapper}>
+          {activeConst.map((c, i) => {
+            return (
+              <div
+                key={i}
+                className={styles.active__list__wrapper__item}
+                style={{
+                  backgroundColor: hoveredIndex === i ? hoverColor : 'initial',
+                }}
+                onMouseEnter={() => handleMouseEnter(i)}
+                onMouseLeave={handleMouseLeave}
+              >
+                <Image
+                  className={styles.active__list__wrapper__item__remove}
+                  src='/close-black.svg'
+                  alt='close'
+                  width={12}
+                  height={12}
+                  onClick={() => handleRemoveItem(c)}
+                />
+                {c.title}
+              </div>
+            );
+          })}
         </div>
-      )}
+      </div>
     </div>
   );
 };

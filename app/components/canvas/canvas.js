@@ -418,8 +418,14 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
 
   // Show Active External Connections
   useEffect(() => {
+    let ids = [];
     // Extract all IDs from firstArray
-    const ids = activeConst.map((item) => item.id);
+    // const ids = activeConst.map((item) => item._id);
+
+    activeConst.forEach((c, i) => {
+      const allIds = extractIds(c);
+      ids = ids.concat(allIds);
+    });
 
     // Determine if `firstArray` is empty
     const shouldUpdateShow = ids.length > 0;
@@ -490,17 +496,44 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       const timeout = setTimeout(() => {
         console.log('Single click detected');
         // Handle single click logic here
-        const item = { title: _node.title, id: _node._id };
+        const item = {
+          title: _node.title,
+          _id: _node._id,
+          children: _node.children,
+        };
 
-        const idExists = externalNodes.some(
-          (obj) => obj.id1 === item.id || obj.id2 === item.id
-        );
-        if (idExists) addToActiveConst(item);
+        const allIds = extractIds(item);
+
+        const hasMatchingId = checkIds(allIds, externalNodes);
+        if (hasMatchingId) addToActiveConst(item);
 
         setClickTimeout(null);
       }, 300); // Wait 300ms to see if another click comes in
       setClickTimeout(timeout);
     }
+  };
+  // Recursive function to extract all `_id`
+  const extractIds = (item) => {
+    let ids = [];
+
+    if (item._id) {
+      ids.push(item._id);
+    }
+
+    if (item.children && Array.isArray(item.children)) {
+      item.children.forEach((child) => {
+        ids = ids.concat(extractIds(child));
+      });
+    }
+
+    return ids;
+  };
+
+  // Function to check if any id matches id1 or id2
+  const checkIds = (ids, items) => {
+    return items.some(
+      (item) => ids.includes(item.id1) || ids.includes(item.id2)
+    );
   };
 
   // Handle Double Click -- Show Information
@@ -607,32 +640,19 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
                   );
 
                   // Select a random color from the array
-                  const randomColor = nodeHasExternalNodes
-                    ? colors[Math.floor(index % colors.length)]
-                    : 'transparent';
+                  const randomColor = colors[Math.floor(index % colors.length)];
 
                   const textLines = splitTextIntoLines(node.title, 13, 3);
                   return (
-                    <g
-                      key={`constellations-${index}`}
-                      onClick={() => handleClick(node)}
-                      onDoubleClick={() => handleDoubleClick(node)}
-                    >
-                      {textLines.map((word, i) => {
-                        return (
-                          <TextWithRect
-                            key={i}
-                            color={randomColor}
-                            i={i}
-                            text={word}
-                            x={node.x}
-                            y={node.y + (verticalSpacing / 4 + 7 * i)}
-                            styles={styles}
-                            cursor={nodeHasExternalNodes}
-                          />
-                        );
-                      })}
-                    </g>
+                    <Node
+                      key={index}
+                      node={node}
+                      index={index}
+                      textLines={textLines}
+                      randomColor={randomColor}
+                      handleClick={handleClick}
+                      handleDoubleClick={handleDoubleClick}
+                    />
                   );
                 })}
               </g>
@@ -670,30 +690,24 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
                 {/* Render nodes */}
                 {axesNodes.map((node, index) => {
                   const isSelected = node.color === 'black';
+                  // Select a random color from the array
+                  const randomColor = colors[Math.floor(index % colors.length)];
                   const textLines = splitTextIntoLines(node.title, 10, 3); // Adjust maxWidth according to your needs
                   return (
                     <g
                       key={`axes-${index}`}
+                      onClick={() => handleClick(node)}
                       onDoubleClick={() => handleDoubleClick(node)}
                     >
-                      {textLines.map((line, i) => (
-                        <text
-                          data-category={node.category}
-                          key={i}
-                          x={node.x}
-                          y={node.y + (verticalAxesSpacing / 3 + 7 * i)}
-                          textAnchor='middle'
-                          aria-label={node.title}
-                          role='img'
-                          className={
-                            isSelected
-                              ? `${styles.svg__text} ${styles.svg__text__active}`
-                              : `${styles.svg__text}`
-                          }
-                        >
-                          {line}
-                        </text>
-                      ))}
+                      <Node
+                        key={index}
+                        node={node}
+                        index={index}
+                        textLines={textLines}
+                        randomColor={randomColor}
+                        handleClick={handleClick}
+                        handleDoubleClick={handleDoubleClick}
+                      />
                     </g>
                   );
                 })}
@@ -742,33 +756,71 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
 Canvas.displayName = 'Canvas';
 export default Canvas;
 
-const TextWithRect = ({ text, x, y, i, styles, color, cursor }) => {
+const Node = ({
+  index,
+  node,
+  textLines,
+  randomColor,
+  handleClick,
+  handleDoubleClick,
+}) => {
+  const [textSizes, setTextSizes] = useState([]);
+  const updateTextSize = (i, size) => {
+    setTextSizes((prevSizes) => {
+      const newSizes = [...prevSizes];
+      newSizes[i] = size;
+      return newSizes;
+    });
+  };
+  const maxTextWidth =
+    textSizes.length > 0 ? Math.max(...textSizes.map((size) => size.width)) : 0;
+
+  const textHeight = textSizes.length * 6;
+
+  return (
+    <g
+      key={`constellations-${index}`}
+      onClick={() => handleClick(node)}
+      onDoubleClick={() => handleDoubleClick(node)}
+    >
+      {textLines.map((word, i) => {
+        return (
+          <TextNode
+            key={i}
+            color={randomColor}
+            i={i}
+            text={word}
+            x={node.x}
+            y={node.y + (verticalSpacing / 4 + 7 * i)}
+            styles={styles}
+            updateTextSize={updateTextSize}
+          />
+        );
+      })}
+      <RectNode
+        color={randomColor}
+        maxWidth={maxTextWidth}
+        maxHeight={textHeight}
+        x={node.x}
+        y={node.y}
+      />
+    </g>
+  );
+};
+
+const TextNode = ({ text, x, y, i, styles, color, updateTextSize }) => {
   const textRef = useRef(null);
   const [textSize, setTextSize] = useState({ width: 0, height: 0 });
-  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     if (textRef.current) {
       const bbox = textRef.current.getBBox();
       setTextSize({ width: bbox.width, height: bbox.height });
+      updateTextSize(i, { width: bbox.width, height: bbox.height });
     }
-  }, [text]);
+  }, [text, updateTextSize]);
   return (
-    <g
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <rect
-        width={textSize.width + 5} // Add some padding
-        height={textSize.height + 5} // Add some padding
-        x={x - textSize.width / 2 - 2.5} // Adjust x position if needed
-        y={y - textSize.height / 2 - 5} // Center the rect vertically with the text
-        fill={color}
-        style={{
-          opacity: isHovered ? 1 : 0, // Show rect only on hover
-          transition: 'opacity 0.3s ease',
-        }}
-      />
+    <g>
       <text
         key={i}
         ref={textRef}
@@ -777,10 +829,30 @@ const TextWithRect = ({ text, x, y, i, styles, color, cursor }) => {
         textAnchor='middle'
         aria-label={text}
         role='img'
-        className={`${cursor ? styles.svg__text__cursor : ''} ${styles.svg__text}`}
+        className={`${styles.svg__text}`}
       >
         {text}
       </text>
     </g>
+  );
+};
+
+const RectNode = ({ color, maxWidth, maxHeight, x, y }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  return (
+    <rect
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      width={maxWidth + 5} // Add some padding
+      height={maxHeight + 5} // Adjust height based on your needs
+      x={x - maxWidth / 2 - 2.5} // Adjust x position if needed
+      y={y + maxHeight / 2 - 2.5} // Adjust y position
+      fill={color}
+      style={{
+        opacity: isHovered ? 0.5 : 0,
+        transition: 'opacity 0.3s ease',
+        cursor: 'pointer',
+      }}
+    />
   );
 };

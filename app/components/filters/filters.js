@@ -25,9 +25,9 @@ const Filters = ({ constellations, axes }) => {
   };
 
   const handleClick = (id, text) => {
-    if (filters.includes(text)) {
+    if (filters.includes(id)) {
       // Remove the item from the filters array and reset its background color
-      setFilters((prev) => prev.filter((item) => item !== text));
+      setFilters((prev) => prev.filter((item) => item !== id));
       setClickedItems((prev) => {
         const updatedClickedItems = { ...prev };
         delete updatedClickedItems[id];
@@ -35,9 +35,10 @@ const Filters = ({ constellations, axes }) => {
       });
     } else {
       // Add the item to the filters array and set its background color
-      setFilters((prev) => [...prev, text]);
+      setFilters((prev) => [...prev, id]);
       setClickedItems((prev) => ({ ...prev, [id]: getRandomColor() }));
     }
+    setOpenFilters(false);
   };
 
   const getItemStyle = (id) => {
@@ -50,10 +51,22 @@ const Filters = ({ constellations, axes }) => {
     return {};
   };
 
+  // Function to check if the item is clicked
+  const isItemClicked = (id) => filters.includes(id);
+
   return (
     <div className={styles.filters}>
       <div className={styles.filters__wrapper} onClick={toggleFilters}>
-        <p>Filters ({filters.length}) +</p>
+        <p>
+          Filters ({filters.length}){' '}
+          <span
+            className={`${styles.filters__wrapper__sign} ${
+              openFilters ? styles.filters__wrapper__sign__close : ''
+            }`}
+          >
+            +
+          </span>
+        </p>
       </div>
 
       <div
@@ -75,7 +88,16 @@ const Filters = ({ constellations, axes }) => {
                 onClick={() => handleClick(`school-${i}`, c.title)}
                 style={getItemStyle(`school-${i}`)}
               >
-                + {c.title}
+                <span
+                  className={`${styles.filters__list__wrapper__items__item__sign} ${
+                    isItemClicked(`school-${i}`)
+                      ? styles.filters__list__wrapper__items__item__sign__close
+                      : ''
+                  }`}
+                >
+                  +
+                </span>{' '}
+                {c.title}
               </p>
             ))}
           </div>
@@ -94,7 +116,16 @@ const Filters = ({ constellations, axes }) => {
                 onClick={() => handleClick(`axis-${i}`, c.title)}
                 style={getItemStyle(`axis-${i}`)}
               >
-                + {c.title}
+                <span
+                  className={`${styles.filters__list__wrapper__items__item__sign} ${
+                    isItemClicked(`axis-${i}`)
+                      ? styles.filters__list__wrapper__items__item__sign__close
+                      : ''
+                  }`}
+                >
+                  +
+                </span>{' '}
+                {c.title}
               </p>
             ))}
           </div>
@@ -113,7 +144,16 @@ const Filters = ({ constellations, axes }) => {
                 onClick={() => handleClick(`cycle-${i}`, item)}
                 style={getItemStyle(`cycle-${i}`)}
               >
-                + {item}
+                <span
+                  className={`${styles.filters__list__wrapper__items__item__sign} ${
+                    isItemClicked(`cycle-${i}`)
+                      ? styles.filters__list__wrapper__items__item__sign__close
+                      : ''
+                  }`}
+                >
+                  +
+                </span>{' '}
+                {item}
               </p>
             ))}
           </div>

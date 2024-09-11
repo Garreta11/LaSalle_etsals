@@ -16,6 +16,15 @@
     padding-left: 10px;
     padding-right: 10px;
     cursor: pointer;
+
+    &__sign {
+      display: inline-block;
+      transition: all ease 0.5s;
+      transform: rotate(0deg);
+      &__close {
+        transform: rotate(45deg);
+      }
+    }
   }
 
   &__list {
@@ -47,6 +56,16 @@
           padding-left: 5px;
           padding-right: 5px;
           cursor: pointer;
+
+          &__sign {
+            display: inline-block;
+            transition: all ease 0.5s;
+            transform: rotate(0deg);
+            &__close {
+              transform: rotate(45deg);
+            }
+          }
+
         }
       }
     }

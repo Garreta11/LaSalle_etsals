@@ -13,7 +13,8 @@
   text {
     font-size: 5px;
     text-transform: uppercase;
-    fill: var(--color-black);
+    transition: all ease 0.5s;
+    // fill: var(--color-black);
   }
 
   &__text {
@@ -33,8 +34,12 @@
   }
 
   line, path {
-    stroke: var(--color-black);
+    stroke: var(--color-darkgray);
     stroke-width: 0.5;
+  }
+  
+  &__externalnodes {
+    stroke: var(--color-black) !important;
   }
 }
 

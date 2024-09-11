@@ -3,8 +3,6 @@ import React, { useEffect, useRef, useState, forwardRef } from 'react';
 import Image from 'next/image';
 import styles from './canvas.module.scss';
 
-import gsap from 'gsap';
-
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 import { useData } from '@/app/DataContext';
@@ -158,7 +156,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
             traverse(child);
           });
         }
-        node.color = 'gray';
+        node.color = 'black';
       };
 
       traverse(root);
@@ -167,8 +165,10 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
 
     // Assume `constellations` is an array, and we need to handle the first item
     const { nodes, links } = createTree(constellations[0]);
-    setConstellationsNodes(nodes);
-    setConstellationsLinks(links);
+    const uniqueNodes = [...new Set(nodes)];
+    const uniqueLinks = [...new Set(links)];
+    setConstellationsNodes(uniqueNodes);
+    setConstellationsLinks(uniqueLinks);
   }, [constellations, dimensions]);
 
   // Axes
@@ -265,7 +265,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
             traverse(child);
           });
         }
-        node.color = 'gray';
+        node.color = 'black';
       };
 
       traverse(root);
@@ -279,38 +279,9 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
           node.x = averageX;
         }
       });
-      // Update X position for nodes with multiple parents and no siblings
-      /* nodes.forEach((node) => {
-        const parents = parentMap.get(node._id);
-        if (parents && parents.length > 1) {
-          // Check if the node has siblings
-          const hasSiblings = parents.some(
-            (parent) => parent.children && parent.children.length > 1
-          );
-
-          // Only update X position if the node has no siblings
-          if (!hasSiblings) {
-            const averageX =
-              parents.reduce((acc, parent) => acc + parent.x, 0) /
-              parents.length;
-            node.x = averageX;
-            console.log(node.title, parents);
-          }
-        }
-      }); */
       // Adjust positions to prevent overlap
       nodes.forEach((node) => {
         const positionKey = `${node.x}-${node.y}`;
-
-        // Check if the position is already occupied
-        /* if (occupiedPositions.has(positionKey)) {
-          // Adjust the node's x position to avoid overlap
-          let offsetX = horizontalAxesSpacing; // You can adjust this value to control the spacing
-          while (occupiedPositions.has(`${node.x + offsetX}-${node.y}`)) {
-            offsetX += horizontalAxesSpacing; // Increment the offset until a free spot is found
-          }
-          node.x += offsetX;
-        } */
 
         // Mark the position as occupied
         occupiedPositions.set(`${node.x}-${node.y}`, node);
@@ -332,11 +303,17 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
     // Assume `axes` is an array, and we need to handle the first item
     const { nodes, links } = createAxesTree(axes[0]);
 
-    setAxesNodes(nodes);
-    setAxesLinks(links);
+    const uniqueNodes = [...new Set(nodes)];
+    const uniqueLinks = [...new Set(links)];
+
+    console.log(links);
+    console.log(uniqueLinks);
+
+    setAxesNodes(uniqueNodes);
+    setAxesLinks(uniqueLinks);
 
     // Move nodes with category "master" and "research" up one position Y
-    nodes.forEach((node) => {
+    uniqueNodes.forEach((node) => {
       if (node.category === 'master') {
         node.y -= verticalAxesSpacing; // Move the node up
       } else if (node.category === 'research') {
@@ -345,9 +322,9 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
     });
 
     // Find the minimum y position in the graph
-    const minY = Math.min(...nodes.map((node) => node.y));
+    const minY = Math.min(...uniqueNodes.map((node) => node.y));
     // Align research nodes without children to the minimum y position
-    nodes.forEach((node) => {
+    uniqueNodes.forEach((node) => {
       if (
         node.category === 'research' &&
         (!node.children || node.children.length === 0)
@@ -375,7 +352,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       // Set the updated categories state
       setCategories(updatedCategories);
     };
-    categoriesPosition(nodes);
+    categoriesPosition(uniqueNodes);
   }, [axes, dimensions]);
 
   // Create ALL External Connections
@@ -398,6 +375,8 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       if (item2 === undefined)
         item2 = axesNodes.find((item) => item._id === ext.connection2._id);
 
+      let pos = item1.x < item2.x ? 100 : -100;
+
       const newExternal = {
         id1: item1._id,
         id2: item2._id,
@@ -407,7 +386,8 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
         y2: item2.y,
         // Optionally, add control points for the curve
         cx: (item1.x + item2.x) / 2, // Midpoint control point for curve
-        cy: item2.y + 50, // Adjust control point for curvature
+        // cy: item2.y + 50, // Adjust control point for curvature
+        cy: (item1.y + item2.y) / 2 - pos, // Adjust control point for curvature
         show: false,
       };
 
@@ -419,9 +399,6 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
   // Show Active External Connections
   useEffect(() => {
     let ids = [];
-    // Extract all IDs from firstArray
-    // const ids = activeConst.map((item) => item._id);
-
     activeConst.forEach((c, i) => {
       const allIds = extractIds(c);
       ids = ids.concat(allIds);
@@ -442,50 +419,23 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
         return { ...item, show: false };
       }
     });
-    setExternalNodes(updatedArray);
+    const uniqueArray = [...new Set(updatedArray)];
+    setExternalNodes(uniqueArray);
+
+    if (activeConst.length <= 0) {
+      const updatedConstellationsItems = constellationsNodes.map((item) => ({
+        ...item,
+        color: 'black',
+      }));
+      const updatedAxesItems = axesNodes.map((item) => ({
+        ...item,
+        color: 'black',
+      }));
+
+      setConstellationsNodes(updatedConstellationsItems);
+      setAxesNodes(updatedAxesItems);
+    }
   }, [activeConst]);
-
-  // GSAP ANIMATION
-  /* useEffect(() => {
-    if (
-      axesNodes.length === 0 ||
-      axesLinks.length === 0 ||
-      constellationsLinks.length === 0 ||
-      constellationsNodes.length === 0
-    )
-      return;
-
-    const textsAttributes = attributesSvgRef.current.querySelectorAll('text');
-    gsap.fromTo(
-      textsAttributes,
-      {
-        opacity: 0,
-      },
-      {
-        duration: 0.3,
-        opacity: 1,
-        stagger: {
-          each: 0.05,
-          ease: 'power1.inOut',
-        },
-      }
-    );
-    const textsAaxes = axesSvgRef.current.querySelectorAll('text');
-    gsap.fromTo(
-      textsAaxes,
-      {
-        opacity: 0,
-      },
-      {
-        duration: 0.3,
-        opacity: 1,
-        stagger: {
-          each: 0.05,
-          ease: 'power1.inOut',
-        },
-      }
-    );
-  }, [axesNodes, axesLinks, constellationsLinks, constellationsNodes]); */
 
   // Handle Click -- Add to Active Constellations
   const handleClick = (_node) => {
@@ -507,6 +457,8 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
         const hasMatchingId = checkIds(allIds, externalNodes);
         if (hasMatchingId) addToActiveConst(item);
 
+        changeColorNodes(item._id, allIds);
+
         setClickTimeout(null);
       }, 300); // Wait 300ms to see if another click comes in
       setClickTimeout(timeout);
@@ -527,6 +479,40 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
     }
 
     return ids;
+  };
+
+  // Function to change color (black or lightgray) for each node
+  const changeColorNodes = (selectedId, ids) => {
+    let otherids = [selectedId];
+
+    ids.forEach((id) => {
+      otherids.push(id);
+      externalNodes.forEach((en) => {
+        if (id === en.id1) {
+          otherids.push(en.id1);
+          otherids.push(en.id2);
+        } else if (id === en.id2) {
+          otherids.push(en.id1);
+          otherids.push(en.id2);
+        }
+      });
+    });
+
+    if (otherids.length <= 1) return;
+
+    const uniqueArray = [...new Set(otherids)];
+
+    const updatedConstellationsItems = constellationsNodes.map((item) => ({
+      ...item,
+      color: uniqueArray.includes(item._id) ? 'black' : 'lightgray',
+    }));
+    const updatedAxesItems = axesNodes.map((item) => ({
+      ...item,
+      color: uniqueArray.includes(item._id) ? 'black' : 'lightgray',
+    }));
+
+    setConstellationsNodes(updatedConstellationsItems);
+    setAxesNodes(updatedAxesItems);
   };
 
   // Function to check if any id matches id1 or id2
@@ -644,15 +630,17 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
 
                   const textLines = splitTextIntoLines(node.title, 13, 3);
                   return (
-                    <Node
-                      key={index}
-                      node={node}
-                      index={index}
-                      textLines={textLines}
-                      randomColor={randomColor}
-                      handleClick={handleClick}
-                      handleDoubleClick={handleDoubleClick}
-                    />
+                    <g key={index}>
+                      <Node
+                        node={node}
+                        index={index}
+                        textLines={textLines}
+                        textColor={node.color}
+                        bgColor={randomColor}
+                        handleClick={handleClick}
+                        handleDoubleClick={handleDoubleClick}
+                      />
+                    </g>
                   );
                 })}
               </g>
@@ -689,7 +677,6 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
                 ))}
                 {/* Render nodes */}
                 {axesNodes.map((node, index) => {
-                  const isSelected = node.color === 'black';
                   // Select a random color from the array
                   const randomColor = colors[Math.floor(index % colors.length)];
                   const textLines = splitTextIntoLines(node.title, 10, 3); // Adjust maxWidth according to your needs
@@ -700,11 +687,11 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
                       onDoubleClick={() => handleDoubleClick(node)}
                     >
                       <Node
-                        key={index}
                         node={node}
                         index={index}
                         textLines={textLines}
-                        randomColor={randomColor}
+                        bgColor={randomColor}
+                        textColor={node.color}
                         handleClick={handleClick}
                         handleDoubleClick={handleDoubleClick}
                       />
@@ -720,6 +707,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
                     node.show && (
                       <path
                         key={index}
+                        className={styles.svg__externalnodes}
                         d={`M ${node.x1},${node.y1} Q ${node.cx},${node.cy} ${node.x2},${node.y2}`}
                         fill='transparent'
                         stroke='black'
@@ -760,7 +748,8 @@ const Node = ({
   index,
   node,
   textLines,
-  randomColor,
+  bgColor,
+  textColor,
   handleClick,
   handleDoubleClick,
 }) => {
@@ -787,9 +776,9 @@ const Node = ({
         return (
           <TextNode
             key={i}
-            color={randomColor}
             i={i}
             text={word}
+            textColor={textColor}
             x={node.x}
             y={node.y + (verticalSpacing / 4 + 7 * i)}
             styles={styles}
@@ -798,7 +787,7 @@ const Node = ({
         );
       })}
       <RectNode
-        color={randomColor}
+        bgColor={bgColor}
         maxWidth={maxTextWidth}
         maxHeight={textHeight}
         x={node.x}
@@ -808,7 +797,7 @@ const Node = ({
   );
 };
 
-const TextNode = ({ text, x, y, i, styles, color, updateTextSize }) => {
+const TextNode = ({ text, x, y, i, textColor, styles, updateTextSize }) => {
   const textRef = useRef(null);
   const [textSize, setTextSize] = useState({ width: 0, height: 0 });
 
@@ -818,7 +807,7 @@ const TextNode = ({ text, x, y, i, styles, color, updateTextSize }) => {
       setTextSize({ width: bbox.width, height: bbox.height });
       updateTextSize(i, { width: bbox.width, height: bbox.height });
     }
-  }, [text, updateTextSize]);
+  }, [text]);
   return (
     <g>
       <text
@@ -827,6 +816,7 @@ const TextNode = ({ text, x, y, i, styles, color, updateTextSize }) => {
         x={x}
         y={y}
         textAnchor='middle'
+        fill={textColor}
         aria-label={text}
         role='img'
         className={`${styles.svg__text}`}
@@ -837,7 +827,7 @@ const TextNode = ({ text, x, y, i, styles, color, updateTextSize }) => {
   );
 };
 
-const RectNode = ({ color, maxWidth, maxHeight, x, y }) => {
+const RectNode = ({ bgColor, maxWidth, maxHeight, x, y }) => {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <rect
@@ -847,7 +837,7 @@ const RectNode = ({ color, maxWidth, maxHeight, x, y }) => {
       height={maxHeight + 5} // Adjust height based on your needs
       x={x - maxWidth / 2 - 2.5} // Adjust x position if needed
       y={y + maxHeight / 2 - 2.5} // Adjust y position
-      fill={color}
+      fill={bgColor}
       style={{
         opacity: isHovered ? 0.5 : 0,
         transition: 'opacity 0.3s ease',

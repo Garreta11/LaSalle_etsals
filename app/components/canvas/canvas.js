@@ -51,6 +51,8 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
   const [infoTitle, setInfoTitle] = useState('');
   const [infoDesc, setInfoDesc] = useState('');
 
+  // selected nodes color
+  const [selectedNodes, setSelectedNodes] = useState([]);
   // Categories
   const [categories, setCategories] = useState([
     {
@@ -306,9 +308,6 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
     const uniqueNodes = [...new Set(nodes)];
     const uniqueLinks = [...new Set(links)];
 
-    console.log(links);
-    console.log(uniqueLinks);
-
     setAxesNodes(uniqueNodes);
     setAxesLinks(uniqueLinks);
 
@@ -361,48 +360,53 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
     if (constellationsNodes.length <= 0 || axesNodes.length <= 0) return;
     const newExternalNodes = [...externalNodes];
 
-    external.forEach((ext, i) => {
-      // Find the item1 with the specific _id
-      let item1 = constellationsNodes.find(
-        (item) => item._id === ext.connection1._id
-      );
-      if (item1 === undefined)
-        item1 = axesNodes.find((item) => item._id === ext.connection2._id);
-      // Find the item2 with the specific _id
-      let item2 = constellationsNodes.find(
-        (item) => item._id === ext.connection2._id
-      );
-      if (item2 === undefined)
-        item2 = axesNodes.find((item) => item._id === ext.connection2._id);
+    if (externalNodes.length <= 0) {
+      external.forEach((ext, i) => {
+        // Find the item1 with the specific _id
+        let item1 = constellationsNodes.find(
+          (item) => item._id === ext.connection1._id
+        );
+        if (item1 === undefined)
+          item1 = axesNodes.find((item) => item._id === ext.connection2._id);
+        // Find the item2 with the specific _id
+        let item2 = constellationsNodes.find(
+          (item) => item._id === ext.connection2._id
+        );
+        if (item2 === undefined)
+          item2 = axesNodes.find((item) => item._id === ext.connection2._id);
 
-      let pos = item1.x < item2.x ? 100 : -100;
+        let pos = item1.x < item2.x ? 100 : -100;
 
-      const newExternal = {
-        id1: item1._id,
-        id2: item2._id,
-        x1: item1.x,
-        y1: item1.y + verticalSpacing / 2,
-        x2: item2.x,
-        y2: item2.y,
-        // Optionally, add control points for the curve
-        cx: (item1.x + item2.x) / 2, // Midpoint control point for curve
-        // cy: item2.y + 50, // Adjust control point for curvature
-        cy: (item1.y + item2.y) / 2 - pos, // Adjust control point for curvature
-        show: false,
-      };
+        const newExternal = {
+          id1: item1._id,
+          id2: item2._id,
+          x1: item1.x,
+          y1: item1.y + verticalSpacing / 2,
+          x2: item2.x,
+          y2: item2.y,
+          // Optionally, add control points for the curve
+          cx: (item1.x + item2.x) / 2, // Midpoint control point for curve
+          // cy: item2.y + 50, // Adjust control point for curvature
+          cy: (item1.y + item2.y) / 2 - pos, // Adjust control point for curvature
+          show: false,
+        };
 
-      newExternalNodes.push(newExternal);
-    });
+        newExternalNodes.push(newExternal);
+      });
+    }
     setExternalNodes(newExternalNodes);
   }, [constellationsNodes, axesNodes]);
 
   // Show Active External Connections
   useEffect(() => {
+    console.log(activeConst);
     let ids = [];
     activeConst.forEach((c, i) => {
       const allIds = extractIds(c);
       ids = ids.concat(allIds);
     });
+    setSelectedNodes(ids);
+    changeColorNodes(ids);
 
     // Determine if `firstArray` is empty
     const shouldUpdateShow = ids.length > 0;
@@ -437,6 +441,44 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
     }
   }, [activeConst]);
 
+  // Function to change color (black or lightgray) for each node
+  const changeColorNodes = (ids) => {
+    // Create a temporary array, adding selectedId to the existing selectedNodes state
+    let tempSelectedNodes = [...ids];
+
+    ids.forEach((id) => {
+      tempSelectedNodes.push(id);
+      externalNodes.forEach((en) => {
+        if (id === en.id1) {
+          tempSelectedNodes.push(en.id1);
+          tempSelectedNodes.push(en.id2);
+        } else if (id === en.id2) {
+          tempSelectedNodes.push(en.id1);
+          tempSelectedNodes.push(en.id2);
+        }
+      });
+    });
+
+    if (tempSelectedNodes.length <= 1) return;
+
+    const uniqueArray = [...new Set(tempSelectedNodes)];
+
+    // setSelectedNodes(uniqueArray); // Update state with unique selected nodes
+
+    // Update colors
+    const updatedConstellationsItems = constellationsNodes.map((item) => ({
+      ...item,
+      color: uniqueArray.includes(item._id) ? 'black' : 'lightgray',
+    }));
+    const updatedAxesItems = axesNodes.map((item) => ({
+      ...item,
+      color: uniqueArray.includes(item._id) ? 'black' : 'lightgray',
+    }));
+
+    setConstellationsNodes(updatedConstellationsItems);
+    setAxesNodes(updatedAxesItems);
+  };
+
   // Handle Click -- Add to Active Constellations
   const handleClick = (_node) => {
     if (clickTimeout) {
@@ -453,11 +495,12 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
         };
 
         const allIds = extractIds(item);
+        // console.log(allIds);
 
         const hasMatchingId = checkIds(allIds, externalNodes);
         if (hasMatchingId) addToActiveConst(item);
 
-        changeColorNodes(item._id, allIds);
+        //changeColorNodes(item._id, selectedNodes);
 
         setClickTimeout(null);
       }, 300); // Wait 300ms to see if another click comes in
@@ -479,40 +522,6 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
     }
 
     return ids;
-  };
-
-  // Function to change color (black or lightgray) for each node
-  const changeColorNodes = (selectedId, ids) => {
-    let otherids = [selectedId];
-
-    ids.forEach((id) => {
-      otherids.push(id);
-      externalNodes.forEach((en) => {
-        if (id === en.id1) {
-          otherids.push(en.id1);
-          otherids.push(en.id2);
-        } else if (id === en.id2) {
-          otherids.push(en.id1);
-          otherids.push(en.id2);
-        }
-      });
-    });
-
-    if (otherids.length <= 1) return;
-
-    const uniqueArray = [...new Set(otherids)];
-
-    const updatedConstellationsItems = constellationsNodes.map((item) => ({
-      ...item,
-      color: uniqueArray.includes(item._id) ? 'black' : 'lightgray',
-    }));
-    const updatedAxesItems = axesNodes.map((item) => ({
-      ...item,
-      color: uniqueArray.includes(item._id) ? 'black' : 'lightgray',
-    }));
-
-    setConstellationsNodes(updatedConstellationsItems);
-    setAxesNodes(updatedAxesItems);
   };
 
   // Function to check if any id matches id1 or id2

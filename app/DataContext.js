@@ -7,6 +7,7 @@ export const DataProvider = ({ children }) => {
   const transformWrapperRef = useRef(null);
   const [activeConst, setActiveConst] = useState([]);
   const [activeFilters, setActiveFilters] = useState([]);
+  const [scaleZoom, setScaleZoom] = useState(1);
 
   // Function to update activeConst by adding a new item
   const addToActiveConst = (newItem) => {
@@ -49,6 +50,10 @@ export const DataProvider = ({ children }) => {
     );
   };
 
+  const editScaleZoom = (zoom) => {
+    setScaleZoom(zoom);
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -59,6 +64,8 @@ export const DataProvider = ({ children }) => {
         activeFilters,
         addToActiveFilters,
         removeFromActiveFilters,
+        scaleZoom,
+        editScaleZoom,
       }}
     >
       {children}

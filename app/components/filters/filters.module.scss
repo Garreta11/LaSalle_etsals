@@ -50,11 +50,12 @@
       }
       
       &__items {
-        display: flex;
-        gap: 20px;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr); 
         &__item {
           padding-left: 5px;
           padding-right: 5px;
+          min-width: 190px;
           cursor: pointer;
 
           &__sign {

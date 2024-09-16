@@ -1,22 +1,13 @@
 'use client';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styles from './footer.module.scss';
 
 import { useData } from '../../DataContext';
 
 const Footer = () => {
   const transformWrapperRef = useData();
+  const { scaleZoom } = useData();
   const [selectedScale, setSelectedScale] = useState(1);
-
-  const handleScale = useCallback(
-    (size) => {
-      if (transformWrapperRef.current) {
-        transformWrapperRef.current.setTransform(0, 0, size, 200, 'easeOut');
-      }
-      setSelectedScale(size);
-    },
-    [transformWrapperRef]
-  );
 
   const scales = [
     { label: '1:100', value: 2.0 },
@@ -25,6 +16,28 @@ const Footer = () => {
     { label: '1:25', value: 1.25 },
     { label: '1:1', value: 1 },
   ];
+
+  useEffect(() => {
+    if (scaleZoom) {
+      const closestScale = scales.reduce((prev, curr) => {
+        return Math.abs(curr.value - scaleZoom) <
+          Math.abs(prev.value - scaleZoom)
+          ? curr
+          : prev;
+      });
+      setSelectedScale(closestScale.value);
+    }
+  }, [scaleZoom]);
+
+  const handleScale = useCallback(
+    (size) => {
+      if (transformWrapperRef.current) {
+        transformWrapperRef.current.setTransform(0, 0, size, 200, 'easeOut');
+        setSelectedScale(size);
+      }
+    },
+    [transformWrapperRef]
+  );
 
   return (
     <footer className={styles.footer}>

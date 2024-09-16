@@ -61,7 +61,7 @@ const Filters = ({ constellations, axes }) => {
       addToActiveFilters(id);
       setClickedItems((prev) => ({ ...prev, [id]: getRandomColor() }));
     }
-    setOpenFilters(false);
+    // setOpenFilters(false);
   };
 
   const getItemStyle = (id) => {

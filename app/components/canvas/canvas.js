@@ -23,7 +23,8 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
   const transformWrapperRef = useData();
 
   //Context
-  const { activeConst, addToActiveConst, activeFilters } = useData();
+  const { activeConst, addToActiveConst, activeFilters, editScaleZoom } =
+    useData();
 
   // Constellations
   const [constellationsNodes, setConstellationsNodes] = useState([]);
@@ -234,7 +235,6 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       const links = [];
       const parentMap = new Map(); // To track parents of nodes
       const nodeMap = new Map();
-      const occupiedPositions = new Map(); // To track occupied positions
 
       const traverse = (node) => {
         let existingNode = nodeMap.get(node._id);
@@ -282,24 +282,19 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
         if (parents && parents.length > 1) {
           const averageX =
             parents.reduce((acc, parent) => acc + parent.x, 0) / parents.length;
+
           node.x = averageX;
         }
       });
-      // Adjust positions to prevent overlap
-      nodes.forEach((node) => {
-        const positionKey = `${node.x}-${node.y}`;
 
-        // Mark the position as occupied
-        occupiedPositions.set(`${node.x}-${node.y}`, node);
-      });
-
-      // Post-processing step to align child nodes with their parent if the parent has only one child
+      // Adjust X position if node has no children to be aligned centered with the parent/s
       nodes.forEach((node) => {
-        if (node.children && node.children.length === 1) {
-          const child = node.children[0];
-          if (child) {
-            child.x = node.x; // Align the child's x position with the parent's x position
-          }
+        const parents = parentMap.get(node._id);
+        if (!node.children) {
+          const averageX =
+            parents.reduce((acc, parent) => acc + parent.x, 0) / parents.length;
+
+          node.x = averageX;
         }
       });
 
@@ -673,6 +668,11 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
           ref={transformWrapperRef}
           doubleClick={{ disabled: true }}
           className={styles.svg__wrapper}
+          maxScale={2}
+          onZoom={(e) => {
+            const newZoomLevel = e.state.scale;
+            editScaleZoom(newZoomLevel); // Update the zoom level
+          }}
         >
           <TransformComponent className={styles.svg__wrapper__component}>
             <svg

@@ -298,6 +298,12 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
         }
       });
 
+      nodes.forEach((n, i) => {
+        if (n.title === 'Specialization in Interior Architecture') {
+          n.x -= 80;
+        }
+      });
+
       return { nodes, links };
     };
 
@@ -305,6 +311,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
     const { nodes, links } = createAxesTree(axes[0]);
 
     const uniqueNodes = [...new Set(nodes)];
+
     const uniqueLinks = [...new Set(links)];
 
     setAxesNodes(uniqueNodes);
@@ -764,22 +771,34 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
                 </g>
                 {/* <g ref={svgRef}></g> */}
                 {/* Render links */}
-                {axesLinks.map((link, index) => (
-                  <g key={`axes-${index}`}>
-                    <line
-                      x1={link.parent.x}
-                      y1={link.parent.y + verticalAxesSpacing / 2 - 15}
-                      x2={link.child.x}
-                      y2={link.child.y + 30}
-                      className={styles.svg__line}
-                    />
-                  </g>
-                ))}
+                {axesLinks.map((link, index) => {
+                  // Split the title into an array of words based on spaces and filter out any empty strings
+                  const wordArray = link.child.title
+                    .split(/\s+/)
+                    .filter(Boolean);
+                  // Count the number of words
+                  const wordCount = wordArray.length;
+                  const lineSpace =
+                    wordCount <= 1 ? 15 : wordCount === 2 ? 30 : 30;
+                  // const lineSpace = 30;
+                  return (
+                    <g key={`axes-${index}`}>
+                      <line
+                        x1={link.parent.x}
+                        y1={link.parent.y + verticalAxesSpacing / 2 - 15}
+                        x2={link.child.x}
+                        y2={link.child.y + lineSpace}
+                        className={styles.svg__line}
+                      />
+                    </g>
+                  );
+                })}
                 {/* Render nodes */}
                 {axesNodes.map((node, index) => {
                   // Select a random color from the array
                   const randomColor = colors[Math.floor(index % colors.length)];
                   const textLines = splitTextIntoLines(node.title, 10, 3); // Adjust maxWidth according to your needs
+
                   return (
                     <g
                       key={`axes-${index}`}
@@ -854,6 +873,8 @@ const Node = ({
   handleDoubleClick,
 }) => {
   const [textSizes, setTextSizes] = useState([]);
+  const [isHovered, setIsHovered] = useState(false);
+
   const updateTextSize = (i, size) => {
     setTextSizes((prevSizes) => {
       const newSizes = [...prevSizes];
@@ -871,7 +892,17 @@ const Node = ({
       key={`constellations-${index}`}
       onClick={() => handleClick(node)}
       onDoubleClick={() => handleDoubleClick(node)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
+      <RectNode
+        bgColor={bgColor}
+        maxWidth={maxTextWidth}
+        maxHeight={textHeight}
+        x={node.x}
+        y={node.y}
+        hover={isHovered}
+      />
       {textLines.map((word, i) => {
         return (
           <TextNode
@@ -886,13 +917,6 @@ const Node = ({
           />
         );
       })}
-      <RectNode
-        bgColor={bgColor}
-        maxWidth={maxTextWidth}
-        maxHeight={textHeight}
-        x={node.x}
-        y={node.y}
-      />
     </g>
   );
 };
@@ -927,19 +951,16 @@ const TextNode = ({ text, x, y, i, textColor, styles, updateTextSize }) => {
   );
 };
 
-const RectNode = ({ bgColor, maxWidth, maxHeight, x, y }) => {
-  const [isHovered, setIsHovered] = useState(false);
+const RectNode = ({ bgColor, maxWidth, maxHeight, x, y, hover }) => {
   return (
     <rect
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       width={maxWidth + 5} // Add some padding
       height={maxHeight + 5} // Adjust height based on your needs
       x={x - maxWidth / 2 - 2.5} // Adjust x position if needed
       y={y + maxHeight / 2 - 2.5} // Adjust y position
       fill={bgColor}
       style={{
-        opacity: isHovered ? 0.5 : 0,
+        opacity: hover ? 1 : 0,
         transition: 'opacity 0.3s ease',
         cursor: 'pointer',
       }}

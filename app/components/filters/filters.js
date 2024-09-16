@@ -1,13 +1,34 @@
 'use client';
 import React, { useState } from 'react';
 import styles from './filters.module.scss';
+import { useData } from '@/app/DataContext';
 
 const colors = ['#C6FF6A', '#FCFF6C', '#E18DFF', '#89F8FF'];
+
+const categories = [
+  {
+    title: '1st cycle',
+    name: 'firstCycle',
+  },
+  {
+    title: '2nd cycle',
+    name: 'secondCycle',
+  },
+  {
+    title: 'Master',
+    name: 'master',
+  },
+  {
+    title: 'Research',
+    name: 'research',
+  },
+];
 
 const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 
 const Filters = ({ constellations, axes }) => {
-  const [filters, setFilters] = useState([]);
+  const { activeFilters, addToActiveFilters, removeFromActiveFilters } =
+    useData();
   const [openFilters, setOpenFilters] = useState(false);
   const [hoveredItemId, setHoveredItemId] = useState(null);
   const [clickedItems, setClickedItems] = useState({});
@@ -24,10 +45,12 @@ const Filters = ({ constellations, axes }) => {
     setHoveredItemId(null);
   };
 
-  const handleClick = (id, text) => {
-    if (filters.includes(id)) {
+  const handleClick = (id) => {
+    const isFilterActive = activeFilters.some((filter) => filter === id);
+
+    if (isFilterActive) {
       // Remove the item from the filters array and reset its background color
-      setFilters((prev) => prev.filter((item) => item !== id));
+      removeFromActiveFilters(id);
       setClickedItems((prev) => {
         const updatedClickedItems = { ...prev };
         delete updatedClickedItems[id];
@@ -35,7 +58,7 @@ const Filters = ({ constellations, axes }) => {
       });
     } else {
       // Add the item to the filters array and set its background color
-      setFilters((prev) => [...prev, id]);
+      addToActiveFilters(id);
       setClickedItems((prev) => ({ ...prev, [id]: getRandomColor() }));
     }
     setOpenFilters(false);
@@ -52,13 +75,13 @@ const Filters = ({ constellations, axes }) => {
   };
 
   // Function to check if the item is clicked
-  const isItemClicked = (id) => filters.includes(id);
+  const isItemClicked = (id) => activeFilters.includes(id);
 
   return (
     <div className={styles.filters}>
       <div className={styles.filters__wrapper} onClick={toggleFilters}>
         <p>
-          Filters ({filters.length}){' '}
+          Filters ({activeFilters.length}){' '}
           <span
             className={`${styles.filters__wrapper__sign} ${
               openFilters ? styles.filters__wrapper__sign__close : ''
@@ -83,14 +106,14 @@ const Filters = ({ constellations, axes }) => {
               <p
                 key={`school-${i}`}
                 className={styles.filters__list__wrapper__items__item}
-                onMouseEnter={() => handleMouseEnter(`school-${i}`)}
+                onMouseEnter={() => handleMouseEnter(c._id)}
                 onMouseLeave={handleMouseLeave}
-                onClick={() => handleClick(`school-${i}`, c.title)}
-                style={getItemStyle(`school-${i}`)}
+                onClick={() => handleClick(c._id)}
+                style={getItemStyle(c._id)}
               >
                 <span
                   className={`${styles.filters__list__wrapper__items__item__sign} ${
-                    isItemClicked(`school-${i}`)
+                    isItemClicked(c._id)
                       ? styles.filters__list__wrapper__items__item__sign__close
                       : ''
                   }`}
@@ -111,14 +134,14 @@ const Filters = ({ constellations, axes }) => {
               <p
                 key={`axis-${i}`}
                 className={styles.filters__list__wrapper__items__item}
-                onMouseEnter={() => handleMouseEnter(`axis-${i}`)}
+                onMouseEnter={() => handleMouseEnter(c._id)}
                 onMouseLeave={handleMouseLeave}
-                onClick={() => handleClick(`axis-${i}`, c.title)}
-                style={getItemStyle(`axis-${i}`)}
+                onClick={() => handleClick(c._id)}
+                style={getItemStyle(c._id)}
               >
                 <span
                   className={`${styles.filters__list__wrapper__items__item__sign} ${
-                    isItemClicked(`axis-${i}`)
+                    isItemClicked(c._id)
                       ? styles.filters__list__wrapper__items__item__sign__close
                       : ''
                   }`}
@@ -135,25 +158,25 @@ const Filters = ({ constellations, axes }) => {
             Training cycles:
           </p>
           <div className={styles.filters__list__wrapper__items}>
-            {['1st cycle', '2nd cycle', 'Master', 'Research'].map((item, i) => (
+            {categories.map((item, i) => (
               <p
                 key={`cycle-${i}`}
                 className={styles.filters__list__wrapper__items__item}
-                onMouseEnter={() => handleMouseEnter(`cycle-${i}`)}
+                onMouseEnter={() => handleMouseEnter(item.name)}
                 onMouseLeave={handleMouseLeave}
-                onClick={() => handleClick(`cycle-${i}`, item)}
-                style={getItemStyle(`cycle-${i}`)}
+                onClick={() => handleClick(item.name)}
+                style={getItemStyle(item.name)}
               >
                 <span
                   className={`${styles.filters__list__wrapper__items__item__sign} ${
-                    isItemClicked(`cycle-${i}`)
+                    isItemClicked(item.name)
                       ? styles.filters__list__wrapper__items__item__sign__close
                       : ''
                   }`}
                 >
                   +
                 </span>{' '}
-                {item}
+                {item.title}
               </p>
             ))}
           </div>

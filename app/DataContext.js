@@ -6,6 +6,7 @@ const DataContext = createContext();
 export const DataProvider = ({ children }) => {
   const transformWrapperRef = useRef(null);
   const [activeConst, setActiveConst] = useState([]);
+  const [activeFilters, setActiveFilters] = useState([]);
 
   // Function to update activeConst by adding a new item
   const addToActiveConst = (newItem) => {
@@ -29,6 +30,25 @@ export const DataProvider = ({ children }) => {
     );
   };
 
+  const addToActiveFilters = (newItem) => {
+    setActiveFilters((prevActiveFilters) => {
+      // Check if an item with the same id already exists
+      const itemExists = prevActiveFilters.some((item) => item === newItem);
+      if (itemExists) {
+        return prevActiveFilters; // Do not add the item if it exists
+      }
+      // Add the item if it does not exist
+      return [...prevActiveFilters, newItem];
+    });
+  };
+
+  // Function to remove a specific item from the activeFilters array
+  const removeFromActiveFilters = (idToRemove) => {
+    setActiveFilters((prevActiveFilters) =>
+      prevActiveFilters.filter((item) => item !== idToRemove)
+    );
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -36,6 +56,9 @@ export const DataProvider = ({ children }) => {
         activeConst,
         addToActiveConst,
         removeFromActiveConst,
+        activeFilters,
+        addToActiveFilters,
+        removeFromActiveFilters,
       }}
     >
       {children}

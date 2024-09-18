@@ -8,7 +8,7 @@ const colors = ['#C6FF6A', '#FCFF6C', '#E18DFF', '#89F8FF'];
 
 const ActiveConstellations = () => {
   // Context
-  const { activeConst, removeFromActiveConst } = useData();
+  const { activeConst, removeFromActiveConst, showExperience } = useData();
 
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [hoverColor, setHoverColor] = useState('');
@@ -31,7 +31,7 @@ const ActiveConstellations = () => {
   return (
     <div className={styles.active}>
       <div className={styles.active__wrapper}>
-        <p>Active constellations ({activeConst.length})</p>
+        {showExperience && <p>Active constellations ({activeConst.length})</p>}
       </div>
 
       <div

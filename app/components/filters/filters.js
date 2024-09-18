@@ -27,8 +27,12 @@ const categories = [
 const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 
 const Filters = ({ constellations, axes }) => {
-  const { activeFilters, addToActiveFilters, removeFromActiveFilters } =
-    useData();
+  const {
+    activeFilters,
+    addToActiveFilters,
+    removeFromActiveFilters,
+    showExperience,
+  } = useData();
   const [openFilters, setOpenFilters] = useState(false);
   const [hoveredItemId, setHoveredItemId] = useState(null);
   const [clickedItems, setClickedItems] = useState({});
@@ -79,109 +83,113 @@ const Filters = ({ constellations, axes }) => {
 
   return (
     <div className={styles.filters}>
-      <div className={styles.filters__wrapper} onClick={toggleFilters}>
-        <p>
-          Filters ({activeFilters.length}){' '}
-          <span
-            className={`${styles.filters__wrapper__sign} ${
-              openFilters ? styles.filters__wrapper__sign__close : ''
+      {showExperience && (
+        <>
+          <div className={styles.filters__wrapper} onClick={toggleFilters}>
+            <p>
+              Filters ({activeFilters.length}){' '}
+              <span
+                className={`${styles.filters__wrapper__sign} ${
+                  openFilters ? styles.filters__wrapper__sign__close : ''
+                }`}
+              >
+                +
+              </span>
+            </p>
+          </div>
+
+          <div
+            className={`${styles.filters__list} ${
+              openFilters ? styles.filters__list__open : ''
             }`}
           >
-            +
-          </span>
-        </p>
-      </div>
-
-      <div
-        className={`${styles.filters__list} ${
-          openFilters ? styles.filters__list__open : ''
-        }`}
-      >
-        <div className={styles.filters__list__wrapper}>
-          <p className={styles.filters__list__wrapper__title}>
-            School attributes:
-          </p>
-          <div className={styles.filters__list__wrapper__items}>
-            {constellations[0].children.map((c, i) => (
-              <p
-                key={`school-${i}`}
-                className={styles.filters__list__wrapper__items__item}
-                onMouseEnter={() => handleMouseEnter(c._id)}
-                onMouseLeave={handleMouseLeave}
-                onClick={() => handleClick(c._id)}
-                style={getItemStyle(c._id)}
-              >
-                <span
-                  className={`${styles.filters__list__wrapper__items__item__sign} ${
-                    isItemClicked(c._id)
-                      ? styles.filters__list__wrapper__items__item__sign__close
-                      : ''
-                  }`}
-                >
-                  +
-                </span>{' '}
-                {c.title}
+            <div className={styles.filters__list__wrapper}>
+              <p className={styles.filters__list__wrapper__title}>
+                School attributes:
               </p>
-            ))}
-          </div>
-        </div>
-        <div className={styles.filters__list__wrapper}>
-          <p className={styles.filters__list__wrapper__title}>
-            Knowledge axes:
-          </p>
-          <div className={styles.filters__list__wrapper__items}>
-            {axes[0].children.map((c, i) => (
-              <p
-                key={`axis-${i}`}
-                className={styles.filters__list__wrapper__items__item}
-                onMouseEnter={() => handleMouseEnter(c._id)}
-                onMouseLeave={handleMouseLeave}
-                onClick={() => handleClick(c._id)}
-                style={getItemStyle(c._id)}
-              >
-                <span
-                  className={`${styles.filters__list__wrapper__items__item__sign} ${
-                    isItemClicked(c._id)
-                      ? styles.filters__list__wrapper__items__item__sign__close
-                      : ''
-                  }`}
-                >
-                  +
-                </span>{' '}
-                {c.title}
+              <div className={styles.filters__list__wrapper__items}>
+                {constellations[0].children.map((c, i) => (
+                  <p
+                    key={`school-${i}`}
+                    className={styles.filters__list__wrapper__items__item}
+                    onMouseEnter={() => handleMouseEnter(c._id)}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={() => handleClick(c._id)}
+                    style={getItemStyle(c._id)}
+                  >
+                    <span
+                      className={`${styles.filters__list__wrapper__items__item__sign} ${
+                        isItemClicked(c._id)
+                          ? styles.filters__list__wrapper__items__item__sign__close
+                          : ''
+                      }`}
+                    >
+                      +
+                    </span>{' '}
+                    {c.title}
+                  </p>
+                ))}
+              </div>
+            </div>
+            <div className={styles.filters__list__wrapper}>
+              <p className={styles.filters__list__wrapper__title}>
+                Knowledge axes:
               </p>
-            ))}
-          </div>
-        </div>
-        <div className={styles.filters__list__wrapper}>
-          <p className={styles.filters__list__wrapper__title}>
-            Training cycles:
-          </p>
-          <div className={styles.filters__list__wrapper__items}>
-            {categories.map((item, i) => (
-              <p
-                key={`cycle-${i}`}
-                className={styles.filters__list__wrapper__items__item}
-                onMouseEnter={() => handleMouseEnter(item.name)}
-                onMouseLeave={handleMouseLeave}
-                onClick={() => handleClick(item.name)}
-                style={getItemStyle(item.name)}
-              >
-                <span
-                  className={`${styles.filters__list__wrapper__items__item__sign} ${
-                    isItemClicked(item.name)
-                      ? styles.filters__list__wrapper__items__item__sign__close
-                      : ''
-                  }`}
-                >
-                  +
-                </span>{' '}
-                {item.title}
+              <div className={styles.filters__list__wrapper__items}>
+                {axes[0].children.map((c, i) => (
+                  <p
+                    key={`axis-${i}`}
+                    className={styles.filters__list__wrapper__items__item}
+                    onMouseEnter={() => handleMouseEnter(c._id)}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={() => handleClick(c._id)}
+                    style={getItemStyle(c._id)}
+                  >
+                    <span
+                      className={`${styles.filters__list__wrapper__items__item__sign} ${
+                        isItemClicked(c._id)
+                          ? styles.filters__list__wrapper__items__item__sign__close
+                          : ''
+                      }`}
+                    >
+                      +
+                    </span>{' '}
+                    {c.title}
+                  </p>
+                ))}
+              </div>
+            </div>
+            <div className={styles.filters__list__wrapper}>
+              <p className={styles.filters__list__wrapper__title}>
+                Training cycles:
               </p>
-            ))}
+              <div className={styles.filters__list__wrapper__items}>
+                {categories.map((item, i) => (
+                  <p
+                    key={`cycle-${i}`}
+                    className={styles.filters__list__wrapper__items__item}
+                    onMouseEnter={() => handleMouseEnter(item.name)}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={() => handleClick(item.name)}
+                    style={getItemStyle(item.name)}
+                  >
+                    <span
+                      className={`${styles.filters__list__wrapper__items__item__sign} ${
+                        isItemClicked(item.name)
+                          ? styles.filters__list__wrapper__items__item__sign__close
+                          : ''
+                      }`}
+                    >
+                      +
+                    </span>{' '}
+                    {item.title}
+                  </p>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };

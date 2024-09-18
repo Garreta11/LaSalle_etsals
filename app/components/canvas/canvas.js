@@ -29,6 +29,8 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
     resetActiveConst,
     activeFilters,
     editScaleZoom,
+    showExperience,
+    editShowExperience,
   } = useData();
 
   // Constellations
@@ -200,10 +202,10 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
   }, [constellations, dimensions, horizontalSpacing]);
 
   useEffect(() => {
-    console.log(dimensions, horizontalSpacing);
     if (dimensions.width < 1024) {
-      console.log('ERROR');
+      editShowExperience(false);
     } else if (dimensions.width < 1100) {
+      editShowExperience(true);
       setNodeTextSize(3);
       // cosntellations
       setNodeRadius(1);
@@ -212,6 +214,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       setNodeAxesRadius(1);
       setHorizontalAxesSpacing(18);
     } else if (dimensions.width < 1200) {
+      editShowExperience(true);
       setNodeTextSize(3.5);
       // cosntellations
       setNodeRadius(1);
@@ -220,6 +223,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       setNodeAxesRadius(1);
       setHorizontalAxesSpacing(20);
     } else if (dimensions.width < 1300) {
+      editShowExperience(true);
       setNodeTextSize(4);
       // cosntellations
       setNodeRadius(1);
@@ -228,6 +232,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       setNodeAxesRadius(1);
       setHorizontalAxesSpacing(22);
     } else if (dimensions.width < 1400) {
+      editShowExperience(true);
       setNodeTextSize(3.8);
       // cosntellations
       setNodeRadius(1);
@@ -236,6 +241,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       setNodeAxesRadius(1);
       setHorizontalAxesSpacing(25);
     } else if (dimensions.width < 1500) {
+      editShowExperience(true);
       setNodeTextSize(4.5);
       // cosntellations
       setNodeRadius(17);
@@ -244,6 +250,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       setNodeAxesRadius(1);
       setHorizontalAxesSpacing(27);
     } else if (dimensions.width < 1600) {
+      editShowExperience(true);
       setNodeTextSize(5);
       // cosntellations
       setNodeRadius(18);
@@ -252,6 +259,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       setNodeAxesRadius(1);
       setHorizontalAxesSpacing(28);
     } else if (dimensions.width < 1700) {
+      editShowExperience(true);
       setNodeTextSize(5);
       // cosntellations
       setNodeRadius(19);
@@ -260,6 +268,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       setNodeAxesRadius(1);
       setHorizontalAxesSpacing(30);
     } else if (dimensions.width < 1800) {
+      editShowExperience(true);
       setNodeTextSize(5.3);
       // cosntellations
       setNodeRadius(20);
@@ -268,6 +277,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       setNodeAxesRadius(1);
       setHorizontalAxesSpacing(33);
     } else if (dimensions.width < 1900) {
+      editShowExperience(true);
       setNodeTextSize(5.5);
       // cosntellations
       setNodeRadius(21);
@@ -276,6 +286,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       setNodeAxesRadius(1);
       setHorizontalAxesSpacing(35);
     } else {
+      editShowExperience(true);
       setNodeTextSize(6);
       // cosntellations
       setNodeRadius(23);
@@ -782,196 +793,220 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
 
   return (
     <div className={styles.canvas}>
-      <div ref={ref} className={styles.svg}>
-        <TransformWrapper
-          ref={transformWrapperRef}
-          doubleClick={{ disabled: true }}
-          className={styles.svg__wrapper}
-          maxScale={2}
-          onZoom={(e) => {
-            const newZoomLevel = e.state.scale;
-            editScaleZoom(newZoomLevel); // Update the zoom level
-          }}
-        >
-          <TransformComponent className={styles.svg__wrapper__component}>
-            <svg
-              viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
-              preserveAspectRatio='xMidYMid meet'
-              width='100%'
-              height='100%'
+      {showExperience && (
+        <>
+          <div ref={ref} className={styles.svg}>
+            <TransformWrapper
+              ref={transformWrapperRef}
+              doubleClick={{ disabled: true }}
+              className={styles.svg__wrapper}
+              maxScale={2}
+              onZoom={(e) => {
+                const newZoomLevel = e.state.scale;
+                editScaleZoom(newZoomLevel); // Update the zoom level
+              }}
             >
-              {/* === CONSTELLATIONS TREE === */}
-              <g ref={attributesSvgRef}>
-                {/* Render links */}
-                {constellationsLinks.map((link, index) => (
-                  <g key={`constellations-${index}`}>
-                    <line
-                      x1={link.parent.x}
-                      y1={link.parent.y + verticalSpacing / 2}
-                      x2={link.parent.x}
-                      y2={
-                        (link.parent.y + verticalSpacing / 2 + link.child.y) / 2
-                      }
-                      className={styles.svg__line}
-                    />
-                    <line
-                      x1={link.parent.x}
-                      y1={
-                        (link.parent.y + verticalSpacing / 2 + link.child.y) / 2
-                      }
-                      x2={link.child.x}
-                      y2={
-                        (link.parent.y + verticalSpacing / 2 + link.child.y) / 2
-                      }
-                      className={styles.svg__line}
-                    />
-                    <line
-                      x1={link.child.x}
-                      y1={
-                        (link.parent.y + verticalSpacing / 2 + link.child.y) / 2
-                      }
-                      x2={link.child.x}
-                      y2={link.child.y}
-                      className={styles.svg__line}
-                    />
+              <TransformComponent className={styles.svg__wrapper__component}>
+                <svg
+                  viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
+                  preserveAspectRatio='xMidYMid meet'
+                  width='100%'
+                  height='100%'
+                >
+                  {/* === CONSTELLATIONS TREE === */}
+                  <g ref={attributesSvgRef}>
+                    {/* Render links */}
+                    {constellationsLinks.map((link, index) => (
+                      <g key={`constellations-${index}`}>
+                        <line
+                          x1={link.parent.x}
+                          y1={link.parent.y + verticalSpacing / 2}
+                          x2={link.parent.x}
+                          y2={
+                            (link.parent.y +
+                              verticalSpacing / 2 +
+                              link.child.y) /
+                            2
+                          }
+                          className={styles.svg__line}
+                        />
+                        <line
+                          x1={link.parent.x}
+                          y1={
+                            (link.parent.y +
+                              verticalSpacing / 2 +
+                              link.child.y) /
+                            2
+                          }
+                          x2={link.child.x}
+                          y2={
+                            (link.parent.y +
+                              verticalSpacing / 2 +
+                              link.child.y) /
+                            2
+                          }
+                          className={styles.svg__line}
+                        />
+                        <line
+                          x1={link.child.x}
+                          y1={
+                            (link.parent.y +
+                              verticalSpacing / 2 +
+                              link.child.y) /
+                            2
+                          }
+                          x2={link.child.x}
+                          y2={link.child.y}
+                          className={styles.svg__line}
+                        />
+                      </g>
+                    ))}
+                    {/* Render nodes */}
+                    {constellationsNodes.map((node, index) => {
+                      const isSelected = node.color === 'black';
+
+                      const nodeHasExternalNodes = externalNodes.some(
+                        (obj) => obj.id1 === node._id || obj.id2 === node._id
+                      );
+
+                      // Select a random color from the array
+                      const randomColor =
+                        colors[Math.floor(index % colors.length)];
+
+                      const textLines = splitTextIntoLines(node.title, 13, 3);
+                      return (
+                        <g key={index}>
+                          <Node
+                            node={node}
+                            index={index}
+                            verticalSpacing={verticalSpacing}
+                            textLines={textLines}
+                            textColor={node.color}
+                            textSize={nodeTextSize}
+                            bgColor={randomColor}
+                            handleClick={handleClick}
+                            handleDoubleClick={handleDoubleClick}
+                          />
+                        </g>
+                      );
+                    })}
                   </g>
-                ))}
-                {/* Render nodes */}
-                {constellationsNodes.map((node, index) => {
-                  const isSelected = node.color === 'black';
 
-                  const nodeHasExternalNodes = externalNodes.some(
-                    (obj) => obj.id1 === node._id || obj.id2 === node._id
-                  );
-
-                  // Select a random color from the array
-                  const randomColor = colors[Math.floor(index % colors.length)];
-
-                  const textLines = splitTextIntoLines(node.title, 13, 3);
-                  return (
-                    <g key={index}>
-                      <Node
-                        node={node}
-                        index={index}
-                        verticalSpacing={verticalSpacing}
-                        textLines={textLines}
-                        textColor={node.color}
-                        textSize={nodeTextSize}
-                        bgColor={randomColor}
-                        handleClick={handleClick}
-                        handleDoubleClick={handleDoubleClick}
-                      />
+                  {/* === AXES TREE === */}
+                  <g ref={axesSvgRef}>
+                    {/* Categories */}
+                    <g className={styles.svg__categories}>
+                      {categories.map((cat, index) => {
+                        return (
+                          <text
+                            key={index}
+                            data-category={cat.name}
+                            fontSize={nodeTextSize}
+                            x={20}
+                            y={cat.posY}
+                          >
+                            {cat.title}
+                          </text>
+                        );
+                      })}
                     </g>
-                  );
-                })}
-              </g>
+                    {/* <g ref={svgRef}></g> */}
+                    {/* Render links */}
+                    {axesLinks.map((link, index) => {
+                      // Split the title into an array of words based on spaces and filter out any empty strings
+                      const wordArray = link.child.title
+                        .split(/\s+/)
+                        .filter(Boolean);
+                      // Count the number of words
+                      const wordCount = wordArray.length;
+                      const lineSpace =
+                        wordCount <= 1 ? 15 : wordCount === 2 ? 30 : 30;
+                      // const lineSpace = 30;
+                      return (
+                        <g key={`axes-${index}`}>
+                          <line
+                            x1={link.parent.x}
+                            y1={link.parent.y + verticalAxesSpacing / 2 - 15}
+                            x2={link.child.x}
+                            y2={link.child.y + lineSpace}
+                            className={styles.svg__line}
+                          />
+                        </g>
+                      );
+                    })}
+                    {/* Render nodes */}
+                    {axesNodes.map((node, index) => {
+                      // Select a random color from the array
+                      const randomColor =
+                        colors[Math.floor(index % colors.length)];
+                      const textLines = splitTextIntoLines(node.title, 10, 3); // Adjust maxWidth according to your needs
 
-              {/* === AXES TREE === */}
-              <g ref={axesSvgRef}>
-                {/* Categories */}
-                <g className={styles.svg__categories}>
-                  {categories.map((cat, index) => {
-                    return (
-                      <text
-                        key={index}
-                        data-category={cat.name}
-                        fontSize={nodeTextSize}
-                        x={20}
-                        y={cat.posY}
-                      >
-                        {cat.title}
-                      </text>
-                    );
-                  })}
-                </g>
-                {/* <g ref={svgRef}></g> */}
-                {/* Render links */}
-                {axesLinks.map((link, index) => {
-                  // Split the title into an array of words based on spaces and filter out any empty strings
-                  const wordArray = link.child.title
-                    .split(/\s+/)
-                    .filter(Boolean);
-                  // Count the number of words
-                  const wordCount = wordArray.length;
-                  const lineSpace =
-                    wordCount <= 1 ? 15 : wordCount === 2 ? 30 : 30;
-                  // const lineSpace = 30;
-                  return (
-                    <g key={`axes-${index}`}>
-                      <line
-                        x1={link.parent.x}
-                        y1={link.parent.y + verticalAxesSpacing / 2 - 15}
-                        x2={link.child.x}
-                        y2={link.child.y + lineSpace}
-                        className={styles.svg__line}
-                      />
-                    </g>
-                  );
-                })}
-                {/* Render nodes */}
-                {axesNodes.map((node, index) => {
-                  // Select a random color from the array
-                  const randomColor = colors[Math.floor(index % colors.length)];
-                  const textLines = splitTextIntoLines(node.title, 10, 3); // Adjust maxWidth according to your needs
+                      return (
+                        <g
+                          key={`axes-${index}`}
+                          onClick={() => handleClick(node)}
+                          onDoubleClick={() => handleDoubleClick(node)}
+                        >
+                          <Node
+                            node={node}
+                            index={index}
+                            textLines={textLines}
+                            textSize={nodeTextSize}
+                            verticalSpacing={verticalAxesSpacing}
+                            bgColor={randomColor}
+                            textColor={node.color}
+                            handleClick={handleClick}
+                            handleDoubleClick={handleDoubleClick}
+                          />
+                        </g>
+                      );
+                    })}
+                  </g>
 
-                  return (
-                    <g
-                      key={`axes-${index}`}
-                      onClick={() => handleClick(node)}
-                      onDoubleClick={() => handleDoubleClick(node)}
-                    >
-                      <Node
-                        node={node}
-                        index={index}
-                        textLines={textLines}
-                        textSize={nodeTextSize}
-                        verticalSpacing={verticalAxesSpacing}
-                        bgColor={randomColor}
-                        textColor={node.color}
-                        handleClick={handleClick}
-                        handleDoubleClick={handleDoubleClick}
-                      />
-                    </g>
-                  );
-                })}
-              </g>
-
-              {/* === EXTERNAL NODES === */}
-              <g>
-                {externalNodes.map(
-                  (node, index) =>
-                    node.show && (
-                      <path
-                        key={index}
-                        className={styles.svg__externalnodes}
-                        d={`M ${node.x1},${node.y1} Q ${node.cx},${node.cy} ${node.x2},${node.y2}`}
-                        fill='transparent'
-                        stroke='black'
-                        strokeWidth='0.5'
-                      />
-                    )
-                )}
-              </g>
-            </svg>
-          </TransformComponent>
-        </TransformWrapper>
-      </div>
-
-      {info && (
-        <div className={styles.info}>
-          <div className={styles.info__header}>
-            <p>{infoTitle}</p>
-            <Image
-              className={styles.info__header__close}
-              src='/close.svg'
-              alt='close'
-              width={12}
-              height={12}
-              onClick={() => setInfo(false)}
-            />
+                  {/* === EXTERNAL NODES === */}
+                  <g>
+                    {externalNodes.map(
+                      (node, index) =>
+                        node.show && (
+                          <path
+                            key={index}
+                            className={styles.svg__externalnodes}
+                            d={`M ${node.x1},${node.y1} Q ${node.cx},${node.cy} ${node.x2},${node.y2}`}
+                            fill='transparent'
+                            stroke='black'
+                            strokeWidth='0.5'
+                          />
+                        )
+                    )}
+                  </g>
+                </svg>
+              </TransformComponent>
+            </TransformWrapper>
           </div>
-          <div className={styles.info__body}>{infoDesc}</div>
-        </div>
+
+          {info && (
+            <div className={styles.info}>
+              <div className={styles.info__header}>
+                <p>{infoTitle}</p>
+                <Image
+                  className={styles.info__header__close}
+                  src='/close.svg'
+                  alt='close'
+                  width={12}
+                  height={12}
+                  onClick={() => setInfo(false)}
+                />
+              </div>
+              <div className={styles.info__body}>{infoDesc}</div>
+            </div>
+          )}
+        </>
+      )}
+
+      {!showExperience && (
+        <p className={styles.error}>
+          Sorry, this experience is currently available only on desktop devices.
+        </p>
       )}
     </div>
   );

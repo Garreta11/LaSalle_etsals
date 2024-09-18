@@ -6,7 +6,7 @@ import { useData } from '../../DataContext';
 
 const Footer = () => {
   const transformWrapperRef = useData();
-  const { scaleZoom } = useData();
+  const { scaleZoom, showExperience } = useData();
   const [selectedScale, setSelectedScale] = useState(1);
 
   const scales = [
@@ -41,20 +41,22 @@ const Footer = () => {
 
   return (
     <footer className={styles.footer}>
-      <div className={styles.footer__wrapper}>
-        <p>Scale</p>
-        <div className={styles.footer__wrapper__values}>
-          {scales.map(({ label, value }) => (
-            <p
-              key={value}
-              className={`${styles.footer__wrapper__values__item} ${selectedScale === value ? 'selected' : ''}`}
-              onClick={() => handleScale(value)}
-            >
-              {label}
-            </p>
-          ))}
+      {showExperience && (
+        <div className={styles.footer__wrapper}>
+          <p>Scale</p>
+          <div className={styles.footer__wrapper__values}>
+            {scales.map(({ label, value }) => (
+              <p
+                key={value}
+                className={`${styles.footer__wrapper__values__item} ${selectedScale === value ? 'selected' : ''}`}
+                onClick={() => handleScale(value)}
+              >
+                {label}
+              </p>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </footer>
   );
 };

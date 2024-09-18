@@ -8,14 +8,14 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { useData } from '@/app/DataContext';
 
 // constellations variables
-const nodeRadius = 16;
+/* const nodeRadius = 16;
 const horizontalSpacing = 8;
-const verticalSpacing = 35;
+const verticalSpacing = 35; */
 
 // axes variables
-const nodeAxesRadius = 15;
+/* const nodeAxesRadius = 15;
 const horizontalAxesSpacing = 3;
-const verticalAxesSpacing = 35;
+const verticalAxesSpacing = 35; */
 
 const colors = ['#C6FF6A', '#FCFF6C', '#E18DFF', '#89F8FF'];
 
@@ -23,8 +23,13 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
   const transformWrapperRef = useData();
 
   //Context
-  const { activeConst, addToActiveConst, activeFilters, editScaleZoom } =
-    useData();
+  const {
+    activeConst,
+    addToActiveConst,
+    resetActiveConst,
+    activeFilters,
+    editScaleZoom,
+  } = useData();
 
   // Constellations
   const [constellationsNodes, setConstellationsNodes] = useState([]);
@@ -36,6 +41,16 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
 
   // External Connections
   const [externalNodes, setExternalNodes] = useState([]);
+
+  // Constellations Variables
+  const [nodeTextSize, setNodeTextSize] = useState(5);
+  const [nodeRadius, setNodeRadius] = useState(16);
+  const [horizontalSpacing, setHorizontalSpacing] = useState(8);
+  const [verticalSpacing, setVerticalSpacing] = useState(35);
+  // Axes Variables
+  const [nodeAxesRadius, setNodeAxesRadius] = useState(15);
+  const [horizontalAxesSpacing, setHorizontalAxesSpacing] = useState(3);
+  const [verticalAxesSpacing, setVerticalAxesSpacing] = useState(35);
 
   const attributesSvgRef = useRef(null);
   const axesSvgRef = useRef(null);
@@ -93,19 +108,26 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
   useEffect(() => {
     const handleResize = () => {
       setDimensions({ width: window.innerWidth, height: window.innerHeight });
+      reloadPage();
     };
 
     window.addEventListener('resize', handleResize);
-    handleResize(); // Set initial dimensions
+    // handleResize(); // Set initial dimensions
+    setDimensions({ width: window.innerWidth, height: window.innerHeight });
 
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
 
+  const reloadPage = () => {
+    location.reload();
+  };
+
   // Constellations
   useEffect(() => {
     if (!constellations || constellations.length === 0) return;
+    if (dimensions.width === 0 || dimensions.height === 0) return;
 
     const startHeight = 100;
 
@@ -175,7 +197,94 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
 
     setConstellationsNodes(uniqueNodes);
     setConstellationsLinks(uniqueLinks);
-  }, [constellations, dimensions]);
+  }, [constellations, dimensions, horizontalSpacing]);
+
+  useEffect(() => {
+    console.log(dimensions, horizontalSpacing);
+    if (dimensions.width < 1024) {
+      console.log('ERROR');
+    } else if (dimensions.width < 1100) {
+      setNodeTextSize(3);
+      // cosntellations
+      setNodeRadius(1);
+      setHorizontalSpacing(20);
+      //axes
+      setNodeAxesRadius(1);
+      setHorizontalAxesSpacing(18);
+    } else if (dimensions.width < 1200) {
+      setNodeTextSize(3.5);
+      // cosntellations
+      setNodeRadius(1);
+      setHorizontalSpacing(25);
+      //axes
+      setNodeAxesRadius(1);
+      setHorizontalAxesSpacing(20);
+    } else if (dimensions.width < 1300) {
+      setNodeTextSize(4);
+      // cosntellations
+      setNodeRadius(1);
+      setHorizontalSpacing(27);
+      //axes
+      setNodeAxesRadius(1);
+      setHorizontalAxesSpacing(22);
+    } else if (dimensions.width < 1400) {
+      setNodeTextSize(3.8);
+      // cosntellations
+      setNodeRadius(1);
+      setHorizontalSpacing(30);
+      //axes
+      setNodeAxesRadius(1);
+      setHorizontalAxesSpacing(25);
+    } else if (dimensions.width < 1500) {
+      setNodeTextSize(4.5);
+      // cosntellations
+      setNodeRadius(17);
+      setHorizontalSpacing(0);
+      //axes
+      setNodeAxesRadius(1);
+      setHorizontalAxesSpacing(27);
+    } else if (dimensions.width < 1600) {
+      setNodeTextSize(5);
+      // cosntellations
+      setNodeRadius(18);
+      setHorizontalSpacing(0);
+      //axes
+      setNodeAxesRadius(1);
+      setHorizontalAxesSpacing(28);
+    } else if (dimensions.width < 1700) {
+      setNodeTextSize(5);
+      // cosntellations
+      setNodeRadius(19);
+      setHorizontalSpacing(0);
+      //axes
+      setNodeAxesRadius(1);
+      setHorizontalAxesSpacing(30);
+    } else if (dimensions.width < 1800) {
+      setNodeTextSize(5.3);
+      // cosntellations
+      setNodeRadius(20);
+      setHorizontalSpacing(0);
+      //axes
+      setNodeAxesRadius(1);
+      setHorizontalAxesSpacing(33);
+    } else if (dimensions.width < 1900) {
+      setNodeTextSize(5.5);
+      // cosntellations
+      setNodeRadius(21);
+      setHorizontalSpacing(0);
+      //axes
+      setNodeAxesRadius(1);
+      setHorizontalAxesSpacing(35);
+    } else {
+      setNodeTextSize(6);
+      // cosntellations
+      setNodeRadius(23);
+      setHorizontalSpacing(0);
+      //axes
+      setNodeAxesRadius(1);
+      setHorizontalAxesSpacing(37);
+    }
+  }, [dimensions]);
 
   // Axes
   useEffect(() => {
@@ -300,7 +409,10 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
 
       nodes.forEach((n, i) => {
         if (n.title === 'Specialization in Interior Architecture') {
-          n.x -= 80;
+          n.x -= 30;
+        }
+        if (n.title === 'Specialization in Rehabilitation') {
+          n.x += 30;
         }
       });
 
@@ -358,7 +470,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       setCategories(updatedCategories);
     };
     categoriesPosition(uniqueNodes);
-  }, [axes, dimensions]);
+  }, [axes, dimensions, horizontalAxesSpacing]);
 
   // Create ALL External Connections
   useEffect(() => {
@@ -741,8 +853,10 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
                       <Node
                         node={node}
                         index={index}
+                        verticalSpacing={verticalSpacing}
                         textLines={textLines}
                         textColor={node.color}
+                        textSize={nodeTextSize}
                         bgColor={randomColor}
                         handleClick={handleClick}
                         handleDoubleClick={handleDoubleClick}
@@ -761,6 +875,7 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
                       <text
                         key={index}
                         data-category={cat.name}
+                        fontSize={nodeTextSize}
                         x={20}
                         y={cat.posY}
                       >
@@ -809,6 +924,8 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
                         node={node}
                         index={index}
                         textLines={textLines}
+                        textSize={nodeTextSize}
+                        verticalSpacing={verticalAxesSpacing}
                         bgColor={randomColor}
                         textColor={node.color}
                         handleClick={handleClick}
@@ -866,7 +983,9 @@ export default Canvas;
 const Node = ({
   index,
   node,
+  verticalSpacing,
   textLines,
+  textSize,
   bgColor,
   textColor,
   handleClick,
@@ -909,6 +1028,7 @@ const Node = ({
             key={i}
             i={i}
             text={word}
+            nodeTextSize={textSize}
             textColor={textColor}
             x={node.x}
             y={node.y + (verticalSpacing / 4 + 7 * i)}
@@ -921,7 +1041,16 @@ const Node = ({
   );
 };
 
-const TextNode = ({ text, x, y, i, textColor, styles, updateTextSize }) => {
+const TextNode = ({
+  text,
+  x,
+  y,
+  i,
+  nodeTextSize,
+  textColor,
+  styles,
+  updateTextSize,
+}) => {
   const textRef = useRef(null);
   const [textSize, setTextSize] = useState({ width: 0, height: 0 });
 
@@ -944,6 +1073,7 @@ const TextNode = ({ text, x, y, i, textColor, styles, updateTextSize }) => {
         aria-label={text}
         role='img'
         className={`${styles.svg__text}`}
+        fontSize={`${nodeTextSize}px`}
       >
         {text}
       </text>

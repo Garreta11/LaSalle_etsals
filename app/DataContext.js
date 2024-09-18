@@ -31,6 +31,12 @@ export const DataProvider = ({ children }) => {
     );
   };
 
+  const resetActiveConst = () => {
+    // setActiveConst([]);
+    console.log(activeConst);
+  };
+
+  // Function to update activeFilters by adding a new item
   const addToActiveFilters = (newItem) => {
     setActiveFilters((prevActiveFilters) => {
       // Check if an item with the same id already exists
@@ -61,6 +67,7 @@ export const DataProvider = ({ children }) => {
         activeConst,
         addToActiveConst,
         removeFromActiveConst,
+        resetActiveConst,
         activeFilters,
         addToActiveFilters,
         removeFromActiveFilters,

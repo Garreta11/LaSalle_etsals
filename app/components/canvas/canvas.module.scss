@@ -10,7 +10,7 @@
   height: 100vh;
 
   text {
-    font-size: 5px;
+    // rfont-size: 5px;
     text-transform: uppercase;
     transition: all ease 0.5s;
     // fill: var(--color-black);
@@ -52,6 +52,7 @@
   height: 80vh;
   max-width: 849px;
   background-color: var(--color-gray);
+  font-size: var(--font-size);
   
   &__header {
     color: var(--color-white);

@@ -1004,9 +1004,10 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       )}
 
       {!showExperience && (
-        <p className={styles.error}>
-          Sorry, this experience is currently available only on desktop devices.
-        </p>
+        <div className={styles.error}>
+          <h3>Learning in constellations</h3>
+          <p>This experience is only available on desktop devices.</p>
+        </div>
       )}
     </div>
   );

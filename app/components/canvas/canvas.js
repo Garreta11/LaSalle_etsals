@@ -6,6 +6,7 @@ import styles from './canvas.module.scss';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 import { useData } from '@/app/DataContext';
+import AboutWrapper from '../aboutWrapper/aboutWrapper';
 
 // constellations variables
 /* const nodeRadius = 16;
@@ -19,7 +20,7 @@ const verticalAxesSpacing = 35; */
 
 const colors = ['#C6FF6A', '#FCFF6C', '#E18DFF', '#89F8FF'];
 
-const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
+const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
   const transformWrapperRef = useData();
 
   //Context
@@ -1004,9 +1005,25 @@ const Canvas = forwardRef(({ constellations, axes, external }, ref) => {
       )}
 
       {!showExperience && (
-        <div className={styles.error}>
-          <h3>Learning in constellations</h3>
-          <p>This experience is only available on desktop devices.</p>
+        <div className={styles.about__content}>
+          <p
+            className={`${styles.about__content__big} ${styles.about__content__first}`}
+          >
+            {about[0].firstParagraph}
+          </p>
+          <p
+            className={`${styles.about__content__big} ${styles.about__content__second}`}
+          >
+            {about[0].secondParagraph}
+          </p>
+          <div className={styles.about__content__columns}>
+            <p className={`${styles.about__content__third}`}>
+              {about[0].thirdParagraph}
+            </p>
+            <p className={`${styles.about__content__fourth}`}>
+              {about[0].fourthParagraph}
+            </p>
+          </div>
         </div>
       )}
     </div>

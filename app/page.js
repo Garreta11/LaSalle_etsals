@@ -6,14 +6,21 @@ import {
   getConstellations,
   getAxes,
   getExternalConnections,
+  getAbout,
 } from './utils/sanity';
 
 const Home = async () => {
   const constellations = await getConstellations();
   const axes = await getAxes();
   const external = await getExternalConnections();
+  const about = await getAbout();
   return (
-    <App constellations={constellations} axes={axes} external={external} />
+    <App
+      constellations={constellations}
+      axes={axes}
+      external={external}
+      about={about}
+    />
   );
 };
 

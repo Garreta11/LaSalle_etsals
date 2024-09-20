@@ -11,7 +11,7 @@ import Canvas from './components/canvas/canvas';
 import ActiveConstellations from './components/activeConstellations/activeConstellations';
 import Filters from './components/filters/filters';
 
-const App = ({ constellations, axes, external }) => {
+const App = ({ constellations, axes, external, about }) => {
   const screenRef = useRef();
 
   const handleDownload = () => {
@@ -48,6 +48,7 @@ const App = ({ constellations, axes, external }) => {
         constellations={constellations}
         axes={axes}
         external={external}
+        about={about}
       />
       <Footer />
     </DataProvider>

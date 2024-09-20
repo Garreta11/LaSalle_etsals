@@ -40,7 +40,9 @@ const Footer = () => {
   );
 
   return (
-    <footer className={styles.footer}>
+    <footer
+      className={`${styles.footer} ${showExperience ? '' : styles.footer__black}`}
+    >
       {showExperience && (
         <div className={styles.footer__wrapper}>
           <p>Scale</p>
@@ -55,6 +57,11 @@ const Footer = () => {
               </p>
             ))}
           </div>
+        </div>
+      )}
+      {!showExperience && (
+        <div className={styles.footer__wrapper}>
+          <p>This experience is only available on desktop devices</p>
         </div>
       )}
     </footer>

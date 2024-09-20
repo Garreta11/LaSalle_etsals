@@ -6,6 +6,10 @@
   background-color: var(--color-gray);
   font-size: var(--font-size);
   z-index: 1;
+  &__black {
+    background-color: var(--color-black);
+    color: var(--color-white);
+  }
   &__wrapper {
     height: 100%;
     display: flex;

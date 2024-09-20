@@ -1071,6 +1071,7 @@ const Node = ({
         bgColor={bgColor}
         maxWidth={maxTextWidth}
         maxHeight={textHeight}
+        length={textLines.length}
         x={node.x}
         y={node.y}
         hover={isHovered}
@@ -1134,13 +1135,13 @@ const TextNode = ({
   );
 };
 
-const RectNode = ({ bgColor, maxWidth, maxHeight, x, y, hover }) => {
+const RectNode = ({ bgColor, maxWidth, maxHeight, x, y, hover, length }) => {
   return (
     <rect
       width={maxWidth + 5} // Add some padding
       height={maxHeight + 5} // Adjust height based on your needs
       x={x - maxWidth / 2 - 2.5} // Adjust x position if needed
-      y={y + maxHeight / 2 - 2.5} // Adjust y position
+      y={y + maxHeight / 2 - (length + length * 0.9)} // Adjust y position
       fill={bgColor}
       style={{
         opacity: hover ? 1 : 0,

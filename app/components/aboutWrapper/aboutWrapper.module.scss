@@ -1,0 +1,58 @@
+.aboutwrapper {
+  &__subheader {
+    position: fixed;
+    width: 100%;
+    top: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    height: 30px;
+    display: flex;
+    align-items: center;
+  }
+
+  &__content {
+    margin: 0 auto;
+    width: 50%;
+    font-size: 30px;
+    padding-top: 90px;
+    padding-bottom: 30px;
+    &__big {
+      margin-bottom: 30px;
+      &:last-of-type {
+        margin-bottom: 60px;
+      }
+    }
+
+    &__columns {
+      display: flex;
+      gap: 10px;
+      font-size: 20px;
+      p {
+        margin-bottom: 0px;
+      }
+    }
+
+    &__first {
+      &:hover {
+        background-color: var(--color-green);
+      }
+    }
+    &__second {
+      &:hover {
+        background-color: var(--color-yellow);
+      }
+    }
+    &__third {
+      &:hover {
+        background-color: var(--color-purple);
+      }
+    }
+    &__fourth {
+      &:hover {
+        background-color: var(--color-blue);
+      }
+    }
+  }
+}

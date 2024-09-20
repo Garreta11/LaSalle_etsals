@@ -40,7 +40,7 @@ const App = ({ constellations, axes, external }) => {
 
   return (
     <DataProvider>
-      <Header handleDownloadAPP={handleDownload} />
+      <Header fixed={false} handleDownloadAPP={handleDownload} />
       <ActiveConstellations />
       <Filters constellations={constellations} axes={axes} />
       <Canvas

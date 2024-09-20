@@ -122,3 +122,18 @@ export async function getExternalConnections() {
   const data = await client.fetch(query);
   return data;
 }
+
+export async function getAbout() {
+  const query = `
+  *[_type == "about"] {
+    _id,
+    title,
+    firstParagraph,
+    secondParagraph,
+    thirdParagraph,
+    fourthParagraph
+  }
+  `;
+  const data = await client.fetch(query);
+  return data;
+}

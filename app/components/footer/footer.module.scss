@@ -6,6 +6,10 @@
   background-color: var(--color-gray);
   font-size: var(--font-size);
   z-index: 1;
+  @media (max-width: 1024px) {
+    height: auto;
+    min-height: 30px;
+  }
   &__black {
     background-color: var(--color-black);
     color: var(--color-white);

@@ -128,10 +128,9 @@ export async function getAbout() {
   *[_type == "about"] {
     _id,
     title,
-    firstParagraph,
-    secondParagraph,
-    thirdParagraph,
-    fourthParagraph
+    cat,
+    es,
+    en
   }
   `;
   const data = await client.fetch(query);

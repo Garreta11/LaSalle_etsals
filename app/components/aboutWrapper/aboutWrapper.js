@@ -3,7 +3,7 @@ import styles from './aboutWrapper.module.scss';
 import { useData } from '@/app/DataContext';
 import Header from '../header/header';
 import { useEffect } from 'react';
-import Image from 'next/image';
+import { PortableText } from '@portabletext/react';
 import Link from 'next/link';
 const AboutWrapper = ({ content }) => {
   const { editShowExperience } = useData();
@@ -19,6 +19,7 @@ const AboutWrapper = ({ content }) => {
       document.documentElement.style.overflowY = 'auto';
     };
   }, []);
+  console.log(content);
   return (
     <div className={styles.aboutwrapper}>
       <Header fixed={true} />
@@ -48,23 +49,17 @@ const AboutWrapper = ({ content }) => {
       </div>
 
       <div className={styles.aboutwrapper__content}>
-        <p
-          className={`${styles.aboutwrapper__content__big} ${styles.aboutwrapper__content__first}`}
-        >
-          {content[0].firstParagraph}
-        </p>
-        <p
-          className={`${styles.aboutwrapper__content__big} ${styles.aboutwrapper__content__second}`}
-        >
-          {content[0].secondParagraph}
-        </p>
-        <div className={styles.aboutwrapper__content__columns}>
-          <p className={`${styles.aboutwrapper__content__third}`}>
-            {content[0].thirdParagraph}
-          </p>
-          <p className={`${styles.aboutwrapper__content__fourth}`}>
-            {content[0].fourthParagraph}
-          </p>
+        <div>
+          <p className={styles.aboutwrapper__content__title}>CAT</p>
+          <PortableText value={content[0].cat} />
+        </div>
+        <div>
+          <p className={styles.aboutwrapper__content__title}>ES</p>
+          <PortableText value={content[0].es} />
+        </div>
+        <div>
+          <p className={styles.aboutwrapper__content__title}>EN</p>
+          <PortableText value={content[0].en} />
         </div>
       </div>
     </div>

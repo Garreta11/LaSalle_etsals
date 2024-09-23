@@ -6,7 +6,7 @@ import styles from './canvas.module.scss';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 import { useData } from '@/app/DataContext';
-import AboutWrapper from '../aboutWrapper/aboutWrapper';
+import { PortableText } from '@portabletext/react';
 
 const colors = ['#C6FF6A', '#FCFF6C', '#E18DFF', '#89F8FF'];
 
@@ -996,24 +996,7 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
 
       {!showExperience && (
         <div className={styles.about__content}>
-          <p
-            className={`${styles.about__content__big} ${styles.about__content__first}`}
-          >
-            {about[0].firstParagraph}
-          </p>
-          <p
-            className={`${styles.about__content__big} ${styles.about__content__second}`}
-          >
-            {about[0].secondParagraph}
-          </p>
-          <div className={styles.about__content__columns}>
-            <p className={`${styles.about__content__third}`}>
-              {about[0].thirdParagraph}
-            </p>
-            <p className={`${styles.about__content__fourth}`}>
-              {about[0].fourthParagraph}
-            </p>
-          </div>
+          <PortableText value={about[0].en} />
         </div>
       )}
     </div>

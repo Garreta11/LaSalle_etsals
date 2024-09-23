@@ -11,28 +11,37 @@ export default {
       name: 'title',
     },
     {
-      name: 'firstParagraph',
-      title: 'First Paragraph',
-      type: 'text',
-      description: 'Text for the first paragraph of the About page.',
+      name: 'cat',
+      title: 'Català',
+      type: 'array',
+      description: 'Descripció de la pàgina ABOUT en català.',
+      of: [
+        {
+          type: 'block',
+        },
+      ],
     },
     {
-      name: 'secondParagraph',
-      title: 'Second Paragraph',
-      type: 'text',
-      description: 'Text for the second paragraph of the About page.',
+      name: 'es',
+      title: 'Español',
+      type: 'array',
+      description: 'Descripción de la página ABOUT en español.',
+      of: [
+        {
+          type: 'block',
+        },
+      ],
     },
     {
-      name: 'thirdParagraph',
-      title: 'Third Paragraph',
-      type: 'text',
-      description: 'Text for the third paragraph of the About page.',
-    },
-    {
-      name: 'fourthParagraph',
-      title: 'Fourth Paragraph',
-      type: 'text',
-      description: 'Text for the fourth paragraph of the About page.',
+      name: 'en',
+      title: 'English',
+      type: 'array',
+      description: 'Description of the ABOUT page in English.',
+      of: [
+        {
+          type: 'block',
+        },
+      ],
     },
   ],
 }

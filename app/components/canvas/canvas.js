@@ -11,7 +11,7 @@ import { PortableText } from '@portabletext/react';
 const colors = ['#C6FF6A', '#FCFF6C', '#E18DFF', '#89F8FF'];
 
 const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
-  const transformWrapperRef = useData();
+  const { transformWrapperRef } = useData();
 
   //Context
   const {

@@ -5,7 +5,7 @@ import styles from './footer.module.scss';
 import { useData } from '../../DataContext';
 
 const Footer = () => {
-  const transformWrapperRef = useData();
+  const { transformWrapperRef } = useData();
   const { scaleZoom, showExperience } = useData();
   const [selectedScale, setSelectedScale] = useState(1);
 

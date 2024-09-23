@@ -8,16 +8,6 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { useData } from '@/app/DataContext';
 import AboutWrapper from '../aboutWrapper/aboutWrapper';
 
-// constellations variables
-/* const nodeRadius = 16;
-const horizontalSpacing = 8;
-const verticalSpacing = 35; */
-
-// axes variables
-/* const nodeAxesRadius = 15;
-const horizontalAxesSpacing = 3;
-const verticalAxesSpacing = 35; */
-
 const colors = ['#C6FF6A', '#FCFF6C', '#E18DFF', '#89F8FF'];
 
 const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {

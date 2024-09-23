@@ -23,5 +23,23 @@
     &__title {
       margin-bottom: 20px;
     }
+
+    &__cat {
+      &:hover {
+        background-color: var(--color-blue);
+      }
+    }
+    
+    &__es {
+      &:hover {
+        background-color: var(--color-green);
+      }
+    }
+    
+    &__en {
+      &:hover {
+        background-color: var(--color-yellow);
+      }
+    }
   }
 }

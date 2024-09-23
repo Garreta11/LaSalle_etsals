@@ -42,7 +42,7 @@ const Wrapper = ({ constellations, axes, external, about }) => {
           pdf.addImage(
             imgData,
             'PNG',
-            0,
+            5,
             0,
             pdf.internal.pageSize.getWidth(),
             (3 * pdf.internal.pageSize.getHeight()) / 4

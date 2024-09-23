@@ -49,15 +49,15 @@ const AboutWrapper = ({ content }) => {
       </div>
 
       <div className={styles.aboutwrapper__content}>
-        <div>
+        <div className={styles.aboutwrapper__content__cat}>
           <p className={styles.aboutwrapper__content__title}>CAT</p>
           <PortableText value={content[0].cat} />
         </div>
-        <div>
+        <div className={styles.aboutwrapper__content__es}>
           <p className={styles.aboutwrapper__content__title}>ES</p>
           <PortableText value={content[0].es} />
         </div>
-        <div>
+        <div className={styles.aboutwrapper__content__en}>
           <p className={styles.aboutwrapper__content__title}>EN</p>
           <PortableText value={content[0].en} />
         </div>

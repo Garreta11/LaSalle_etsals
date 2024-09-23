@@ -180,6 +180,7 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
       };
 
       traverse(root);
+
       return { nodes, links };
     };
 
@@ -383,6 +384,15 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
         }
         node.knowledgeAxes = findSchoolAttributesById(axes[0], node._id);
         node.color = 'black';
+
+        if (
+          node.title === 'ALEC Tectonic' ||
+          node.title === 'ALEC Digital' ||
+          node.title === 'ALEC Social & Cultural' ||
+          node.title === 'ALEC Environmental'
+        ) {
+          node.x += 160;
+        }
       };
 
       traverse(root);

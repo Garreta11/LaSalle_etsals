@@ -385,6 +385,10 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
         node.knowledgeAxes = findSchoolAttributesById(axes[0], node._id);
         node.color = 'black';
 
+        // move all nodes to the right
+        node.x += 20;
+
+        // move ALEC nodes
         if (
           node.title === 'ALEC Tectonic' ||
           node.title === 'ALEC Digital' ||
@@ -421,10 +425,10 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
 
       nodes.forEach((n, i) => {
         if (n.title === 'Specialization in Interior Architecture') {
-          n.x -= 30;
+          n.x -= 33;
         }
         if (n.title === 'Specialization in Rehabilitation') {
-          n.x += 30;
+          n.x += 33;
         }
       });
 

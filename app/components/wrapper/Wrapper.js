@@ -142,7 +142,7 @@ const Wrapper = ({ constellations, axes, external, about }) => {
             'Active filters: ' + allActiveFilters
           );
 
-          pdf.save('download.pdf');
+          pdf.save('Learning in constellations.pdf');
         } catch (error) {
           console.error('Error generating data URL:', error);
         }

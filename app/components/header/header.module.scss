@@ -30,9 +30,15 @@
       &__about {
         text-decoration: none;
         color: var(--color-black);
+        &:hover {
+          background-color: var(--color-green);
+        }
       }
       &__pdf {
         cursor: pointer;
+        &:hover {
+          background-color: var(--color-purple);
+        }
       }
     }
 

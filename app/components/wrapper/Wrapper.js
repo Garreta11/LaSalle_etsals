@@ -37,9 +37,9 @@ const Wrapper = ({ constellations, axes, external, about }) => {
 
     let styles = document.createElement('style');
     styles.append(
-      "@font-face { font-family: 'Akzidenz'; src: local('Akzidenz'), url(data:application/octet-stream;base64," +
+      "@font-face { font-family: 'Akzidenz'; src: url(data:application/octet-stream;base64," +
         akzidenzFontBase64 +
-        ") format('otf');}"
+        ')}'
     );
 
     defs.append(styles);
@@ -50,6 +50,10 @@ const Wrapper = ({ constellations, axes, external, about }) => {
     setTimeout(() => {
       html2canvas(input, { useCORS: true, allowTaint: true }).then((canvas) => {
         try {
+          var ctx = canvas.getContext('2d');
+          ctx.webkitImageSmoothingEnabled = true;
+          ctx.mozImageSmoothingEnabled = true;
+          ctx.imageSmoothingEnabled = true;
           const imgData = canvas.toDataURL('image/png');
           const pdf = new jsPDF({ orientation: 'landscape' });
 

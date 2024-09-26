@@ -34,10 +34,11 @@
 
   line, path {
     stroke: var(--color-darkgray);
-    stroke-width: 0.2;
+    stroke-width: 0.5;
   }
   
   &__externalnodes {
+    stroke-width: 0.2;
     stroke: var(--color-black) !important;
   }
 }

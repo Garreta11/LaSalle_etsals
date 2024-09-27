@@ -944,7 +944,7 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
                       // Select a random color from the array
                       const randomColor =
                         colors[Math.floor(index % colors.length)];
-                      const textLines = splitTextIntoLines(node.title, 10, 3); // Adjust maxWidth according to your needs
+                      const textLines = splitTextIntoLines(node.title, 13, 3); // Adjust maxWidth according to your needs
 
                       return (
                         <g

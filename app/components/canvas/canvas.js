@@ -445,6 +445,8 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
     setAxesNodes(uniqueNodes);
     setAxesLinks(uniqueLinks);
 
+    console.log(uniqueLinks);
+
     // Move nodes with category "master" and "research" up one position Y
     uniqueNodes.forEach((node) => {
       if (node.category === 'master') {
@@ -638,7 +640,6 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
     const uniqueArray = [...new Set(updatedArray)];
     setExternalNodes(uniqueArray);
 
-    console.log(uniqueArray);
     // changeColorNodes(ids, uniqueArray);
   }, [activeFilters]);
 

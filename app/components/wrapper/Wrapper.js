@@ -111,10 +111,12 @@ const Wrapper = ({ constellations, axes, external, about }) => {
             'F'
           );
           pdf.setTextColor(0, 0, 0);
+          const showConstellations =
+            allActiveConst.length > 0 ? allActiveConst : 'None';
           pdf.text(
             pdf.internal.pageSize.getWidth() / 3 + gapRectangle / 2 + 1,
             pdf.internal.pageSize.getHeight() - 15 + 6,
-            'Active constellations: ' + allActiveConst
+            'Active constellations: ' + showConstellations
           );
 
           // Third rectangle - Active Filters
@@ -139,7 +141,8 @@ const Wrapper = ({ constellations, axes, external, about }) => {
           pdf.text(
             (2 * pdf.internal.pageSize.getWidth()) / 3 + gapRectangle / 2 + 1,
             pdf.internal.pageSize.getHeight() - 15 + 6,
-            'Active filters: ' + allActiveFilters
+            'Active filters: ' +
+              (activeFilters.length > 0 ? allActiveFilters : 'None')
           );
 
           pdf.save('Learning in constellations.pdf');

@@ -9,12 +9,19 @@ const Footer = () => {
   const { scaleZoom, showExperience } = useData();
   const [selectedScale, setSelectedScale] = useState(1);
 
-  const scales = [
+  /* const scales = [
     { label: '1:100', value: 2.0 },
     { label: '1:75', value: 1.75 },
     { label: '1:50', value: 1.5 },
     { label: '1:25', value: 1.25 },
     { label: '1:1', value: 1 },
+  ]; */
+  const scales = [
+    { label: '1:1', value: 1.0 },
+    { label: '1:0,8', value: 1.25 },
+    { label: '1:0,66', value: 1.5 },
+    { label: '1:0,57', value: 1.75 },
+    { label: '1:0,5', value: 2.0 },
   ];
 
   useEffect(() => {

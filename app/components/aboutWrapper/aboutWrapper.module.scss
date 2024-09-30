@@ -29,19 +29,49 @@
 
     &__cat {
       &:hover {
-        background-color: var(--color-blue);
+        .aboutwrapper__content__title {
+          background-color: var(--color-blue);
+          width: fit-content;
+        }
+        .aboutwrapper__content__cat__content {
+          p {
+            display: inline;
+            background-color: var(--color-blue);
+            box-shadow: 0px 0 0 var(--color-blue), 0px 0 0 var(--color-blue);
+          }
+        }
       }
     }
     
     &__es {
       &:hover {
-        background-color: var(--color-green);
+        .aboutwrapper__content__title {
+          background-color: var(--color-green);
+          width: fit-content;
+        }
+        .aboutwrapper__content__es__content {
+          p {
+            display: inline;
+            background-color: var(--color-green);
+            box-shadow: 0px 0 0 var(--color-green), 0px 0 0 var(--color-green);
+          }
+        }
       }
     }
     
     &__en {
       &:hover {
-        background-color: var(--color-yellow);
+        .aboutwrapper__content__title {
+          background-color: var(--color-yellow);
+          width: fit-content;
+        }
+        .aboutwrapper__content__en__content {
+          p {
+            display: inline;
+            background-color: var(--color-yellow);
+            box-shadow: 0px 0 0 var(--color-yellow), 0px 0 0 var(--color-yellow);
+          }
+        }
       }
     }
   }

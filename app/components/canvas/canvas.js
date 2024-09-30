@@ -638,7 +638,8 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
     const uniqueArray = [...new Set(updatedArray)];
     setExternalNodes(uniqueArray);
 
-    changeColorNodes(ids, uniqueArray);
+    console.log(uniqueArray);
+    // changeColorNodes(ids, uniqueArray);
   }, [activeFilters]);
 
   const findSchoolAttributesById = (obj, id) => {

@@ -766,10 +766,12 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
       clearTimeout(clickTimeout);
       setClickTimeout(null);
     }
-    // Handle double click logic here
-    setInfoTitle(_node.title);
-    setInfoDesc(_node.description[0].children[0].text);
-    setInfo(true);
+    if (_node.description && _node.description.length > 0) {
+      // Handle double click logic here
+      setInfoTitle(_node.title);
+      setInfoDesc(_node.description[0].children[0].text);
+      setInfo(true);
+    }
   };
 
   const splitTextIntoLines = (text, maxWidth, maxLines) => {

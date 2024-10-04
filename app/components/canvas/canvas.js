@@ -976,7 +976,7 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
                   </g>
 
                   {/* === EXTERNAL NODES === */}
-                  <g>
+                  <g style={{ pointerEvents: 'none' }}>
                     {externalNodes.map(
                       (node, index) =>
                         node.show && (

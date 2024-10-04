@@ -19,6 +19,7 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
     addToActiveConst,
     resetActiveConst,
     activeFilters,
+    removeFromActiveFilters,
     editScaleZoom,
     showExperience,
     editShowExperience,
@@ -445,8 +446,6 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
     setAxesNodes(uniqueNodes);
     setAxesLinks(uniqueLinks);
 
-    console.log(uniqueLinks);
-
     // Move nodes with category "master" and "research" up one position Y
     uniqueNodes.forEach((node) => {
       if (node.category === 'master') {
@@ -587,6 +586,9 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
 
       setConstellationsNodes(updatedConstellationsItems);
       setAxesNodes(updatedAxesItems);
+      activeFilters.forEach((f, i) => {
+        removeFromActiveFilters(f);
+      });
     }
   }, [activeConst]);
 
@@ -638,9 +640,10 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
       return item;
     });
     const uniqueArray = [...new Set(updatedArray)];
+
     setExternalNodes(uniqueArray);
 
-    // changeColorNodes(ids, uniqueArray);
+    changeColorNodes(ids, uniqueArray);
   }, [activeFilters]);
 
   const findSchoolAttributesById = (obj, id) => {
@@ -678,12 +681,14 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
     ids.forEach((id) => {
       tempSelectedNodes.push(id);
       newExternalNodes.forEach((en) => {
-        if (id === en.id1) {
-          tempSelectedNodes.push(en.id1);
-          tempSelectedNodes.push(en.id2);
-        } else if (id === en.id2) {
-          tempSelectedNodes.push(en.id1);
-          tempSelectedNodes.push(en.id2);
+        if (en.show) {
+          if (id === en.id1) {
+            tempSelectedNodes.push(en.id1);
+            tempSelectedNodes.push(en.id2);
+          } else if (id === en.id2) {
+            tempSelectedNodes.push(en.id1);
+            tempSelectedNodes.push(en.id2);
+          }
         }
       });
     });

@@ -70,7 +70,7 @@ const Wrapper = ({ constellations, axes, external, about }) => {
           );
 
           // Set the custom font for text
-          pdf.setFont('Akzidenz');
+          pdf.setFont('Helvetica', 'bold');
 
           pdf.addImage(
             imgData,

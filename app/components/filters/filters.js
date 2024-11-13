@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import Image from 'next/image';
 import styles from './filters.module.scss';
 import { useData } from '@/app/DataContext';
 
@@ -36,6 +37,9 @@ const Filters = ({ constellations, axes }) => {
   const [openFilters, setOpenFilters] = useState(false);
   const [hoveredItemId, setHoveredItemId] = useState(null);
   const [clickedItems, setClickedItems] = useState({});
+
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [hoverColor, setHoverColor] = useState('');
 
   const toggleFilters = () => {
     setOpenFilters((prevState) => !prevState);
@@ -80,6 +84,16 @@ const Filters = ({ constellations, axes }) => {
 
   // Function to check if the item is clicked
   const isItemClicked = (id) => activeFilters.includes(id);
+
+  const handleMouseEnterActive = (index) => {
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    setHoveredIndex(index);
+    setHoverColor(randomColor);
+  };
+
+  const handleRemoveItemActive = (_item) => {
+    removeFromActiveFilters(_item);
+  };
 
   return (
     <div className={styles.filters}>
@@ -188,6 +202,40 @@ const Filters = ({ constellations, axes }) => {
               </div>
             </div>
           </div>
+
+          {/* <div
+            className={`${styles.filters__activelist} ${
+              activeFilters.length > 0 ? styles.filters__activelist__open : ''
+            }`}
+          >
+            <div className={styles.filters__activelist__wrapper}>
+              {activeFilters.map((c, i) => {
+                console.log(c);
+                return (
+                  <div
+                    key={i}
+                    className={styles.filters__activelist__wrapper__item}
+                    style={{
+                      backgroundColor:
+                        hoveredIndex === i ? hoverColor : 'initial',
+                    }}
+                    onMouseEnter={() => handleMouseEnterActive(i)}
+                    onMouseLeave={handleMouseEnterActive}
+                  >
+                    <Image
+                      className={styles.filters__activelist__wrapper__remove}
+                      src='/close-black.svg'
+                      alt='close'
+                      width={12}
+                      height={12}
+                      onClick={() => handleRemoveItemActive(c)}
+                    />
+                    {c}
+                  </div>
+                );
+              })}
+            </div>
+          </div> */}
         </>
       )}
     </div>

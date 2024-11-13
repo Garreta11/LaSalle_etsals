@@ -71,4 +71,37 @@
       }
     }
   }
+
+  &__activelist {
+    background-color: var(--color-white);
+    color: var(--color-black);
+
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out;
+    &__open {
+      max-height: 200px;
+    }
+
+    &__wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 10px 5px;
+      column-gap: 20px;
+      row-gap: 5px;
+
+      &__item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0px 5px;
+        line-height: 0;
+        
+        &__remove {
+          cursor: pointer;
+        }
+      }
+    }
+  }
 }

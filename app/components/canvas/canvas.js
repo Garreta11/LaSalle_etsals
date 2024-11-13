@@ -509,7 +509,7 @@ const Canvas = forwardRef(({ constellations, axes, external, about }, ref) => {
         if (item2 === undefined)
           item2 = axesNodes.find((item) => item._id === ext.connection2._id);
 
-        let pos = item1.x < item2.x ? 100 : -100;
+        let pos = item1.x < item2.x ? 50 : -50;
 
         // Get School Attributes
         const sa = findSchoolAttributesById(constellationsNodes[0], item1._id);
@@ -1050,10 +1050,6 @@ const Node = ({
       return newSizes;
     });
   };
-  const maxTextWidth =
-    textSizes.length > 0 ? Math.max(...textSizes.map((size) => size.width)) : 0;
-
-  const textHeight = textSizes.length * 6;
 
   return (
     <g
@@ -1136,22 +1132,5 @@ const TextNode = ({
         {text}
       </text>
     </g>
-  );
-};
-
-const RectNode = ({ bgColor, maxWidth, maxHeight, x, y, hover, length }) => {
-  return (
-    <rect
-      width={maxWidth + 5} // Add some padding
-      height={maxHeight + 5} // Adjust height based on your needs
-      x={x - maxWidth / 2 - 2.5} // Adjust x position if needed
-      y={y + maxHeight / 2 - (length + length * 0.9)} // Adjust y position
-      fill={bgColor}
-      style={{
-        opacity: hover ? 1 : 0,
-        transition: 'opacity 0.3s ease',
-        cursor: 'pointer',
-      }}
-    />
   );
 };

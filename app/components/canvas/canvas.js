@@ -1063,15 +1063,23 @@ const Node = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <RectNode
-        bgColor={bgColor}
-        maxWidth={maxTextWidth}
-        maxHeight={textHeight}
-        length={textLines.length}
-        x={node.x}
-        y={node.y}
-        hover={isHovered}
-      />
+      {textSizes.map((_, i) => {
+        return (
+          <rect
+            key={i}
+            fill={bgColor}
+            width={textSizes[i].width + 5}
+            height={6 + 5}
+            x={node.x - textSizes[i].width / 2 - 2.5}
+            y={node.y + i * 8}
+            style={{
+              opacity: isHovered ? 1 : 0,
+              transition: 'opacity 0.3s ease',
+              cursor: 'pointer',
+            }}
+          />
+        );
+      })}
       {textLines.map((word, i) => {
         return (
           <TextNode
